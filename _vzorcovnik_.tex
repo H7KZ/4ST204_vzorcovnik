@@ -1,7 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \documentclass[a4paper, 11pt]{article}
 
 \usepackage[utf8]{inputenc}
@@ -27,52 +23,45 @@
     every axis plot/.style={thick}}}
 
 \usepackage{listings}
-\usepackage{xcolor}
 
 \lstset{
     basicstyle=\ttfamily\small,
     backgroundcolor=\color{gray!10},
     frame=single,
-    breaklines=true
-}
-\lstset{
-  inputencoding=utf8,
-  extendedchars=true,
-  literate=
-    {á}{{\'a}}1 {č}{{\v c}}1 {ď}{{\v d}}1 {é}{{\'e}}1
-    {ě}{{\v e}}1 {í}{{\'i}}1 {ň}{{\v n}}1 {ó}{{\'o}}1
-    {ř}{{\v r}}1 {š}{{\v s}}1 {ť}{{\v t}}1 {ú}{{\'u}}1
-    {ů}{{\r u}}1 {ý}{{\'y}}1 {ž}{{\v z}}1
-    {Á}{{\'A}}1 {Č}{{\v C}}1 {Ď}{{\v D}}1 {É}{{\'E}}1
-    {Ě}{{\v E}}1 {Í}{{\'I}}1 {Ň}{{\v N}}1 {Ó}{{\'O}}1
-    {Ř}{{\v R}}1 {Š}{{\v S}}1 {Ť}{{\v T}}1 {Ú}{{\'U}}1
-    {Ů}{{\r U}}1 {Ý}{{\'Y}}1 {Ž}{{\v Z}}1
+    breaklines=true,
+    inputencoding=utf8,
+    extendedchars=true,
+    literate=
+      {á}{{\'a}}1 {č}{{\v c}}1 {ď}{{\v d}}1 {é}{{\'e}}1
+      {ě}{{\v e}}1 {í}{{\'i}}1 {ň}{{\v n}}1 {ó}{{\'o}}1
+      {ř}{{\v r}}1 {š}{{\v s}}1 {ť}{{\v t}}1 {ú}{{\'u}}1
+      {ů}{{\r u}}1 {ý}{{\'y}}1 {ž}{{\v z}}1
+      {Á}{{\'A}}1 {Č}{{\v C}}1 {Ď}{{\v D}}1 {É}{{\'E}}1
+      {Ě}{{\v E}}1 {Í}{{\'I}}1 {Ň}{{\v N}}1 {Ó}{{\'O}}1
+      {Ř}{{\v R}}1 {Š}{{\v S}}1 {Ť}{{\v T}}1 {Ú}{{\'U}}1
+      {Ů}{{\r U}}1 {Ý}{{\'Y}}1 {Ž}{{\v Z}}1
 }
 
 \newenvironment{funkcedict}
-{
-\renewcommand{\arraystretch}{1.4}
-\begin{tabular}{p{0.22\textwidth} p{0.38\textwidth} p{0.35\textwidth}}
-\textbf{Funkce} & \textbf{Příklad použití} & \textbf{Vysvětlení} \\
-\midrule
+{%
+  \begingroup
+  \renewcommand{\arraystretch}{1.4}%
+  \lstset{basicstyle=\ttfamily\small, columns=fullflexible, frame=none, backgroundcolor={}}%
+  \setlength{\tabcolsep}{4pt}%
+  \begin{tabular}{p{0.19\textwidth} p{0.40\textwidth} p{0.30\textwidth}}
+  \textbf{Funkce} & \textbf{Příklad použití} & \textbf{Vysvětlení} \\
+  \midrule
 }
-{
-\end{tabular}
+{%
+  \end{tabular}%
+  \endgroup
 }
 
-
-%% ----------------------------------------------------------------------------
-%\title{Vzorcovník -- 4ST204 Statistika pro informatiky}
-%\author{}
-%\date{}
 
 \begin{document}
 
-%\maketitle
-
 \begin{titlepage}
 \begin{center}
-
 
 
 {\large
@@ -106,94 +95,13 @@ FAKULTA INFORMATIKY A STATISTIKY
 \end{center}
 \end{titlepage}
 
-% \begin{center}
-
-% \includegraphics[width=0.35\textwidth]{FIS_2_logo_cb_cmyk.eps}
-
-% \vspace{0.5cm}
-
-% \Huge
-% Vzorcovník -- 4ST204 Statistika pro informatiky
-
-% \end{center}
-
-% %% ----------------------------------------------------------------------------
-% \section{Užitečné vzorce}
-
-% Mějme výběr $n$ hodnot $x_1, x_2, \dots, x_n$. Pak aritmetický průměr
-% a geometrický průměr je
-
-% \begin{equation*}
-% \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i ,
-% \qquad \textrm{a} \qquad
-% \bar{x}_{G} = \sqrt[n]{ \prod_{i=1}^{n} x_i }.
-% \end{equation*}
-
-
-% %% ----------------------------------------------------------------------------
-% \section{Užitečné funkce v R}
-
-% \begin{funkcedict}
-
-% \texttt{mean(x)} &
-% \begin{lstlisting}
-% x <- c(1, 2, 3, 4, 5)
-% mean(x)
-% \end{lstlisting}
-% &
-% Vrací aritmetický průměr hodnot ve vektoru \texttt{x}.
-% \\
-
-% \texttt{sd(x)} &
-% \begin{lstlisting}
-% sd(x)
-% \end{lstlisting}
-% &
-% Vrací výběrovou směrodatnou odchylku ve vektoru \texttt{x}.
-% \\
-
-% \end{funkcedict}
-
-
-% %% ----------------------------------------------------------------------------
-% \section{Užitečné funkce v Pythonu}
-
-% \begin{funkcedict}
-
-% \texttt{np.mean(x)} &
-% \begin{lstlisting}
-% import numpy as np
-% x = np.array([1,2,3,4,5])
-% np.mean(x)
-% \end{lstlisting}
-% &
-% Vrací aritmetický průměr pole pomocí knihovny \texttt{numpy}.
-% \\
-
-% \texttt{statistics.mean(x)} &
-% \begin{lstlisting}
-% import statistics
-% x = [1,2,3,4,5]
-% statistics.mean(x)
-% \end{lstlisting}
-% &
-% Vrací aritmetický průměr pomocí standardní knihovny Pythonu
-% \texttt{statistics}.
-% \\
-
-% \end{funkcedict}
-
-%%_____________________________________________________________________________
 \tableofcontents
 \newpage
-%%_____________________________________________________________________________
 
-%%-----------------------------------------------------------------------------
+
 \section{Popisná Statistika}
-%%_____________________________________________________________________________
 
 \subsection{Četnosti}
-%%-----------------------------------------------------------------------------
 
 \subsubsection{Absolutní četnost}
 
@@ -208,7 +116,6 @@ kde
 \begin{itemize}[noitemsep]
 \item $n_i$ je počet výskytů $i$-té hodnoty ve výběru.
 \end{itemize}
-%%-----------------------------------------------------------------------------
 
 \subsubsection{Součet absolutních četností}
 
@@ -228,7 +135,6 @@ kde
 \item $n_i$ je absolutní četnost $i$-té hodnoty (nebo třídy),
 \item $n$ je celkový počet pozorování.
 \end{itemize}
-%%-----------------------------------------------------------------------------
 
 \subsubsection{Relativní Četnost}
 Relativní četnost $i$-té hodnoty ve výběru je definována jako podíl
@@ -245,7 +151,6 @@ kde
 \item $n_i$ je absolutní četnost $i$-té hodnoty (kolikrát se hodnota vyskytla),
 \item $n$ je celkový počet pozorování v souboru.
 \end{itemize}
-%%-----------------------------------------------------------------------------
 
 \subsubsection{Součet relativních četností}
 
@@ -267,7 +172,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Kumulativní absolutní četnost}
 
 Kumulativní absolutní četnost $i$-té hodnoty je součet absolutních četností
@@ -318,7 +223,7 @@ Vrací kumulativní součty pole absolutních četností.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Kumulativní relativní četnost}
 
 Kumulativní relativní četnost $i$-té hodnoty je součet relativních četností
@@ -370,12 +275,10 @@ Vrací kumulativní relativní četnosti.
 
 \end{funkcedict}
 
-%%-----------------------------------------------------------------------------
+
 \subsection{Charakteristiky polohy}
-%%_____________________________________________________________________________
 
 \subsubsection{Aritmetický průměr}
-%%-----------------------------------------------------------------------------
 
 Aritmetický průměr (výběrový průměr) je definován jako součet
 všech hodnot statistického souboru dělený počtem pozorování.
@@ -425,7 +328,7 @@ Vrací aritmetický průměr pole pomocí knihovny \texttt{numpy}.
 
 \noindent\hrule\medskip
 
-%%----------------------------------------------------------------------------
+
 \subsubsection{Vážený aritmetický průměr (z četnostní tabulky)}
 
 Pokud jsou data zadána pomocí četnostní tabulky, aritmetický průměr
@@ -485,7 +388,7 @@ Vrací vážený průměr hodnot ve vektoru \texttt{x} s váhami \texttt{w}.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Aritmetický průměr pomocí relativních četností}
 
 Pokud jsou data vyjádřena pomocí relativních četností,
@@ -545,7 +448,7 @@ pomocí knihovny \texttt{numpy}.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Harmonický průměr}
 
 Harmonický průměr je definován jako podíl počtu pozorování
@@ -603,7 +506,7 @@ z knihovny \texttt{scipy.stats}.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Geometrický průměr}
 
 Geometrický průměr je definován jako $n$-tá odmocnina součinu
@@ -664,7 +567,7 @@ z knihovny \texttt{scipy.stats}.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Vztah mezi průměry}
 
 \begin{equation*}
@@ -681,7 +584,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Medián}
 
 Medián je hodnota, která rozděluje uspořádaný statistický soubor
@@ -738,7 +641,7 @@ Vrací medián hodnot ve vektoru \texttt{x}.
 
 \noindent\hrule\medskip
 
-%%----------------------------------------------------------------------------
+
 \subsubsection{Kvantily a kvartily}
 
 Kvantily rozdělují uspořádaný statistický soubor na části
@@ -831,7 +734,7 @@ Vrací první, druhý a třetí kvartil.
 \\
 
 \end{funkcedict}
-%%----------------------------------------------------------------------------
+
 \subsubsection{Interkvartilové rozpětí (IQR)}
 
 Interkvartilové rozpětí (IQR) je rozdíl mezi třetím
@@ -886,7 +789,7 @@ Vrací interkvartilové rozpětí pole.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Modus}
 
 Modus je hodnota, která se ve statistickém souboru vyskytuje nejčastěji
@@ -909,7 +812,7 @@ kde
 
 \begin{funkcedict}
 
-\texttt{names(which.max(table(x)))} &
+\texttt{names(\allowbreak which.max(\allowbreak table(x)))} &
 \begin{lstlisting}
 x <- c(1, 2, 2, 3, 3, 3, 4)
 names(which.max(table(x)))
@@ -936,9 +839,9 @@ Vrací modus pomocí standardní knihovny Pythonu.
 
 \end{funkcedict}
 
-%%----------------------------------------------------------------------------
+
 \subsection{Charakteristiky variability}
-%%____________________________________________________________________________
+
 \subsubsection{Variační rozpětí}
 
 Variační rozpětí je rozdíl mezi maximální a minimální
@@ -992,7 +895,7 @@ Vrací variační rozpětí hodnot ve vektoru \texttt{x}.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Rozptyl statistického souboru}
 
 Rozptyl vyjadřuje průměrnou kvadratickou odchylku hodnot
@@ -1065,7 +968,7 @@ pomocí knihovny \texttt{numpy}.
 
 \noindent\hrule\medskip
 
-%%----------------------------------------------------------------------------
+
 \subsubsection{Výběrový rozptyl}
 
 Výběrový rozptyl je nezkreslený odhad rozptylu populace
@@ -1125,7 +1028,7 @@ Vrací výběrový rozptyl pomocí knihovny
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Vážený rozptyl}
 
 Vážený rozptyl vyjadřuje variabilitu hodnot znaku,
@@ -1185,7 +1088,7 @@ pomocí knihovny \texttt{numpy}.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Směrodatná odchylka statistického souboru}
 
 Směrodatná odchylka je druhá odmocnina rozptylu
@@ -1241,7 +1144,7 @@ Vrací směrodatnou odchylku pole (nevýběrovou).
 
 \noindent\hrule\medskip
 
-%%----------------------------------------------------------------------------
+
 \subsubsection{Výběrová směrodatná odchylka}
 
 Výběrová směrodatná odchylka je odmocnina
@@ -1299,7 +1202,7 @@ Vrací výběrovou směrodatnou odchylku
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Variační koeficient}
 
 Variační koeficient vyjadřuje relativní variabilitu dat
@@ -1353,7 +1256,7 @@ Vrací variační koeficient hodnot ve vektoru \texttt{x}.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Střední absolutní odchylka (MAD)}
 
 Střední absolutní odchylka (medián absolutních odchylek od mediánu)
@@ -1406,7 +1309,7 @@ Neškalovaný MAD pomocí knihovny \texttt{numpy}.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Detekce odlehlých hodnot -- Tukeyovy meze}
 
 Hodnota je považována za odlehlou (outlier), pokud leží mimo interval
@@ -1461,12 +1364,12 @@ Identifikace odlehlých hodnot.
 
 \end{funkcedict}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \clearpage
 \section{Teorie pravděpodobnosti}
-%%_____________________________________________________________________________
+
 \subsection{Počet pravděpodobnosti}
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Klasická definice pravděpodobnosti}
 
 Pravděpodobnost jevu $A$ při klasické definici pravděpodobnosti
@@ -1487,7 +1390,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Pravděpodobnost komplementárního jevu}
 
 Pravděpodobnost opačného (komplementárního, doplňkového) jevu k jevu $A$
@@ -1506,7 +1409,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Horní odhad pravděpodobnosti průniku}
 
 Pravděpodobnost současného nastání dvou jevů nemůže být větší
@@ -1527,7 +1430,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Průnik nezávislých jevů}
 
 Jsou-li jevy $A$ a $B$ nezávislé, pak pravděpodobnost jejich
@@ -1547,7 +1450,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Sjednocení dvou jevů}
 
 Pravděpodobnost, že nastane alespoň jeden z jevů $A$ nebo $B$,
@@ -1569,7 +1472,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Sjednocení neslučitelných jevů}
 
 Pokud jsou jevy $A$ a $B$ neslučitelné (nemohou nastat současně),
@@ -1590,7 +1493,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Podmíněná pravděpodobnost}
 
 Podmíněná pravděpodobnost jevu $A$ za podmínky, že nastal jev $B$,
@@ -1613,7 +1516,7 @@ tj.\ nastání $B$ nemění pravděpodobnost $A$.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Věta o úplné pravděpodobnosti}
 
 Je-li $\{B_1, B_2, \ldots, B_k\}$ úplný systém jevů (vzájemně se vylučují
@@ -1632,9 +1535,9 @@ kde
 \item $P(B_j)$ je pravděpodobnost jevu $B_j$.
 \end{itemize}
 
-%%_____________________________________________________________________________
+
 \subsection{Náhodné veličiny}
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Pravděpodobnostní funkce diskrétní náhodné veličiny}
 
 Pravděpodobnost, že diskrétní náhodná veličina $X$
@@ -1655,7 +1558,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Distribuční funkce diskrétní náhodné veličiny}
 
 Distribuční funkce (kumulativní pravděpodobnost) udává
@@ -1678,7 +1581,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Pravděpodobnost intervalu}
 
 Pravděpodobnost, že náhodná veličina $X$ nabývá hodnot
@@ -1705,7 +1608,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Střední hodnota diskrétní náhodné veličiny}
 
 Střední hodnota (očekávaná hodnota) diskrétní náhodné veličiny
@@ -1727,7 +1630,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Rozptyl diskrétní náhodné veličiny}
 
 Rozptyl náhodné veličiny vyjadřuje míru variability
@@ -1751,7 +1654,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Hustota pravděpodobnosti spojité náhodné veličiny}
 
 Hustota pravděpodobnosti vyjadřuje rychlost změny distribuční
@@ -1772,7 +1675,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Normalizační podmínka hustoty pravděpodobnosti}
 
 Celková pravděpodobnost spojité náhodné veličiny
@@ -1794,7 +1697,7 @@ náhodné veličiny.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Distribuční funkce spojité náhodné veličiny}
 
 Distribuční funkce spojité náhodné veličiny udává
@@ -1819,7 +1722,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Pravděpodobnost intervalu spojité náhodné veličiny}
 
 Pravděpodobnost, že spojitá náhodná veličina $X$ nabývá hodnot
@@ -1847,7 +1750,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Střední hodnota spojité náhodné veličiny}
 
 Střední hodnota (očekávaná hodnota) spojité náhodné veličiny
@@ -1872,7 +1775,7 @@ náhodné veličiny.
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Rozptyl spojité náhodné veličiny}
 
 Rozptyl spojité náhodné veličiny vyjadřuje variabilitu
@@ -1900,7 +1803,7 @@ kde
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Směrodatná odchylka náhodné veličiny}
 
 Směrodatná odchylka vyjadřuje míru variability
@@ -1918,9 +1821,9 @@ kde
 \item $\sqrt{\phantom{x}}$ označuje druhou odmocninu.
 \end{itemize}
 
-%%_____________________________________________________________________________
+
 \subsection{Vlastnosti střední hodnoty a rozptylu}
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Vlastnosti střední hodnoty $E(X)$}
 
 Pro libovolné náhodné veličiny $X$, $Y$ a konstantu $c$ platí:
@@ -1964,7 +1867,7 @@ Ověření linearity střední hodnoty. \\
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Vlastnosti rozptylu $D(X)$}
 
 Pro libovolnou náhodnou veličinu $X$ a konstantu $c$ platí:
@@ -2002,10 +1905,10 @@ Vlastnosti populačního rozptylu (dělí $n$); \texttt{var()} v R dělí $n-1$.
 
 \end{funkcedict}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \clearpage
 \section{Kombinatorika a Metriky}
-%%_____________________________________________________________________________
+
 \subsection{Kombinatorika}
 Mějme množinu $n$ prvků, ze které vybíráme $k$ prvků.
 \begin{itemize}[noitemsep]
@@ -2029,13 +1932,11 @@ Obecně: $\|x\|_p = \left( \sum |x_i|^p \right)^{1/p}$. Klíčové pro metriky c
 \end{itemize}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \clearpage
 \section{Pravděpodobnostní rozdělení}
-%%_____________________________________________________________________________
+
 \subsection{Diskrétní rozdělení}
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Binomické rozdělení $\mathrm{Bin}(n,\,p)$}
 
 Popisuje počet úspěchů v $n$ nezávislých pokusech, kde pravděpodobnost
@@ -2092,7 +1993,7 @@ Binomické rozdělení z knihovny \texttt{scipy.stats}. \\
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Poissonovo rozdělení $\mathrm{Pois}(\lambda)$}
 
 Popisuje počet náhodných událostí v daném časovém intervalu nebo oblasti,
@@ -2136,7 +2037,7 @@ d/p/q/r $=$ hustota / distribuční fce / kvantilová fce / simulace. \\
 
 \begin{funkcedict}
 
-\texttt{stats.poisson.pmf(k, mu)} &
+{\small\texttt{stats.poisson.pmf(k, mu)}} &
 \begin{lstlisting}
 from scipy.stats import poisson
 poisson.pmf(2, mu=4)   # P(X=2)
@@ -2149,7 +2050,7 @@ Poissonovo rozdělení z knihovny \texttt{scipy.stats}. \\
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Hypergeometrické rozdělení $\mathrm{Hyper}(N,\,K,\,n)$}
 
 Popisuje počet úspěchů při výběru $n$ prvků \textbf{bez návratu}
@@ -2195,7 +2096,7 @@ d/p/q/r $=$ hustota / distribuční fce / kvantilová fce / simulace. \\
 
 \begin{funkcedict}
 
-\texttt{stats.hypergeom.pmf(k, M, n, N)} &
+\texttt{stats.hypergeom.\allowbreak pmf(k,M,n,N)} &
 \begin{lstlisting}
 from scipy.stats import hypergeom
 hypergeom.pmf(3, M=50, n=20, N=10)
@@ -2206,9 +2107,9 @@ Hypergeometrické rozdělení z knihovny \texttt{scipy.stats}. \\
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Spojitá rozdělení}
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Normální rozdělení $N(\mu,\,\sigma^2)$}
 
 Nejdůležitější spojité rozdělení. Hustota pravděpodobnosti má tvar symetrické
@@ -2299,7 +2200,7 @@ norm.rvs(size=100)        # simulace
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Rovnoměrné rozdělení $U(a,\,b)$}
 
 Každá hodnota v intervalu $[a, b]$ je stejně pravděpodobná.
@@ -2354,7 +2255,7 @@ uniform.ppf(0.75, loc=0, scale=1) # kvantil
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Exponenciální rozdělení $\mathrm{Exp}(\lambda)$}
 
 Modeluje dobu čekání na první událost Poissonova procesu.
@@ -2411,10 +2312,10 @@ expon.ppf(0.9, scale=2)  # kvantil
 & \texttt{scale}$=1/\lambda$. \\
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Odvozená rozdělení}
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Studentovo t-rozdělení $t(\nu)$}
 
 Vzniká jako podíl standardní normální veličiny a odmocniny veličiny
@@ -2469,7 +2370,7 @@ t.rvs(df=10, size=100)  # simulace
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{Chí-kvadrát rozdělení $\chi^2(k)$}
 
 Vzniká jako součet kvadrátů $k$ nezávislých standardně normálních veličin.
@@ -2524,7 +2425,7 @@ chi2.rvs(df=3, size=100) # simulace
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsubsection{F-rozdělení $F(k_1,\,k_2)$}
 
 Vzniká jako podíl dvou nezávislých veličin $\chi^2$, každé dělené svými
@@ -2575,11 +2476,9 @@ f.rvs(dfn=3, dfd=10, size=100) # simulace
 & \texttt{dfn}$=k_1$ (čitatel), \texttt{dfd}$=k_2$ (jmenovatel). \\
 \end{funkcedict}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \clearpage
 \section{Testování hypotéz}
-%%_____________________________________________________________________________
 
 \subsection{Bodový odhad}
 
@@ -2603,7 +2502,6 @@ Podíl $\pi$ & $\hat{p} = x/n$ & \texttt{sum(x == k) / length(x)} \\
 \subsection{Intervaly spolehlivosti a velikost výběru}
 
 \subsubsection{Interval pro průměr ($\mu$)}
-%%-----------------------------------------------------------------------------
 
 Odhadujeme skutečnou střední hodnotu populace $\mu$ na základě výběrového průměru $\bar{x}$.
 
@@ -2674,7 +2572,6 @@ lower, upper = xbar - err, xbar + err
 \noindent\hrule\medskip
 
 \subsubsection{Interval pro podíl ($\pi$)}
-%%-----------------------------------------------------------------------------
 
 Odhadujeme skutečný podíl $\pi$ z výběrové relativní četnosti $\hat{p} = x/n$.
 Vždy použijeme normální rozdělení (Z-kvantil).
@@ -2733,7 +2630,6 @@ lower, upper = p - err, p + err
 \noindent\hrule\medskip
 
 \subsubsection{Potřebná velikost výběru ($n$)}
-%%-----------------------------------------------------------------------------
 
 Minimální rozsah výběru, aby se odhad nemýlil o více než $\Delta$.
 Výsledek \textbf{vždy zaokrouhlit nahoru}.
@@ -2784,7 +2680,7 @@ n = math.ceil(p*(1-p) * (z_crit/delta)**2)
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Jednovýběrový t-test (střední hodnota)}
 
 \textbf{H$_0$:} $\mu = \mu_0$. Testové kritérium má t-rozdělení s $n-1$ stupni volnosti.
@@ -2831,7 +2727,7 @@ Ruční výpočet (jednostranný levostranný). \\
 
 \begin{funkcedict}
 
-\texttt{stats.ttest\_1samp(data, mu0)} &
+{\footnotesize\ttfamily stats.ttest\_1samp(data, mu0)} &
 \begin{lstlisting}
 stats.ttest_1samp(data, popmean=mu0)
 \end{lstlisting}
@@ -2839,7 +2735,7 @@ stats.ttest_1samp(data, popmean=mu0)
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Dvouvýběrový t-test (Welchův)}
 
 \textbf{H$_0$:} $\mu_1 = \mu_2$. Welchova aproximace stupňů volnosti (předpokládáme různé rozptyly).
@@ -2888,7 +2784,7 @@ stats.ttest_ind(A, B, equal_var=False)
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Párový t-test}
 
 \textbf{H$_0$:} $\mu_d = 0$, kde $d_i = x_{2i} - x_{1i}$ jsou párové rozdíly.
@@ -2921,7 +2817,7 @@ stats.ttest_rel(po, pred)
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Test proporce (Z-test)}
 
 \textbf{H$_0$:} $\pi = \pi_0$. Testové kritérium:
@@ -2968,7 +2864,7 @@ from statsmodels.stats.proportion import proportions_ztest
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Jednocestná analýza rozptylu (ANOVA)}
 
 \textbf{H$_0$:} $\mu_1 = \mu_2 = \dots = \mu_k$, \textbf{H$_1$:} alespoň dva průměry se liší. \\
@@ -3037,7 +2933,7 @@ stats.f_oneway(A, B, C)
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Chí-kvadrát test dobré shody}
 
 \textbf{H$_0$:} výběr odpovídá předpokládanému rozdělení.
@@ -3083,7 +2979,7 @@ stats.chisquare(O, f_exp=E)
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Chí-kvadrát test nezávislosti}
 
 \textbf{H$_0$:} řádkový a sloupcový znak jsou nezávislé.
@@ -3136,7 +3032,7 @@ Síla závislosti: $V \in [0,1]$. Pearsonův $C$ závisí na rozměrech tabulky.
 
 \begin{funkcedict}
 
-\texttt{stats.chi2\_contingency(table)} &
+\texttt{stats.chi2\_\allowbreak contingency(table)} &
 \begin{lstlisting}
 chi2, p, df, exp = stats.chi2_contingency(table)
 \end{lstlisting}
@@ -3144,9 +3040,7 @@ chi2, p, df, exp = stats.chi2_contingency(table)
 
 \end{funkcedict}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%_____________________________________________________________________________
 \subsection{Stupně volnosti -- přehled}
 
 \textbf{Zlaté pravidlo:} stupně volnosti $=$ počet pozorování $-$ počet odhadovaných parametrů.
@@ -3156,7 +3050,7 @@ chi2, p, df, exp = stats.chi2_contingency(table)
 
 {\small
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{p{0.42\textwidth} p{0.20\textwidth} p{0.32\textwidth}}
+\begin{tabular}{p{0.38\textwidth} p{0.20\textwidth} p{0.32\textwidth}}
 \textbf{Test} & \textbf{df} & \textbf{Poznámka} \\
 \midrule
 Jednovýběrový t-test & $df = n-1$ & $n$ = počet pozorování \\
@@ -3168,7 +3062,7 @@ Dvouvýběrový t-test (Welchův) & $df \approx \text{Welch}$ & složitý vzorec
 \medskip
 \noindent\textbf{F-testy}
 
-\begin{tabular}{p{0.42\textwidth} p{0.14\textwidth} p{0.14\textwidth} p{0.24\textwidth}}
+\begin{tabular}{p{0.38\textwidth} p{0.12\textwidth} p{0.12\textwidth} p{0.24\textwidth}}
 \textbf{Test} & $df_1$ & $df_2$ & \textbf{Poznámka} \\
 \midrule
 Test shody rozptylů & $n-1$ & $m-1$ & dva df -- jeden pro každý soubor \\
@@ -3186,16 +3080,11 @@ Test nezávislosti (konting. tabulka) & $df = (r-1)(s-1)$ \quad ($r$ řádků, $
 \end{tabular}
 } % end \small
 
-\renewcommand{\arraystretch}{1.0}
-
-\clearpage
 \section{Analýza závislosti}
-%%_____________________________________________________________________________
 
 \subsection{Korelační analýza}
 
 \subsubsection{Pearsonův korelační koeficient}
-%%-----------------------------------------------------------------------------
 
 Měří sílu \textbf{lineární} závislosti dvou spojitých proměnných.
 
@@ -3243,7 +3132,6 @@ r, p = stats.pearsonr(x, y)
 \noindent\hrule\medskip
 
 \subsubsection{Spearmanův korelační koeficient}
-%%-----------------------------------------------------------------------------
 
 Měří sílu \textbf{monotónní} závislosti (neparametrický, odolný vůči odlehlým hodnotám).
 Počítá se jako Pearsonův koeficient aplikovaný na pořadí hodnot.
@@ -3280,11 +3168,10 @@ rho, p = stats.spearmanr(x, y)
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Jednoduchá lineární regrese}
 
 \subsubsection{Odhad koeficientů (MNČ)}
-%%-----------------------------------------------------------------------------
 
 Model: $\hat{y} = b_0 + b_1 x$. Koeficienty minimalizují součet čtverců reziduí $Q = \sum e_i^2$.
 
@@ -3352,7 +3239,6 @@ print(m2.rsquared_adj)
 \noindent\hrule\medskip
 
 \subsubsection{Součty čtverců a koeficient determinace $R^2$}
-%%-----------------------------------------------------------------------------
 
 \begin{equation*}
 S_Y = S_T + S_R, \qquad R^2 = \frac{S_T}{S_Y} \in [0,1], \qquad
@@ -3393,7 +3279,6 @@ r_squared = res.rvalue**2
 \noindent\hrule\medskip
 
 \subsubsection{t-test a F-test platnosti modelu}
-%%-----------------------------------------------------------------------------
 
 \textbf{t-test pro $b_1$:} $H_0\colon \beta_1 = 0$; $T = b_1/s_{b_1} \sim t(n-2)$. \\
 \textbf{F-test modelu:} $H_0\colon \beta_1 = 0$; $F = S_T/\bigl(S_R/(n-2)\bigr) \sim F(1;\,n-2)$.
@@ -3439,7 +3324,6 @@ res.pvalue
 \noindent\hrule\medskip
 
 \subsubsection{Predikce}
-%%-----------------------------------------------------------------------------
 
 Bodová predikce střední hodnoty $Y$ pro novou hodnotu $x^*$: $\hat{y}^* = b_0 + b_1 x^*$.
 
@@ -3477,16 +3361,13 @@ pred.summary_frame() # Obsahuje intervaly
 
 \end{funkcedict}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \clearpage
 \section{Časové řady}
-%%_____________________________________________________________________________
 
 \subsection{Základní charakteristiky}
 
 \subsubsection{Absolutní přírůstky a tempa růstu}
-%%-----------------------------------------------------------------------------
 
 \begin{align*}
 \text{1.\ diference:} \quad &\Delta y_t = y_t - y_{t-1} \\
@@ -3539,7 +3420,6 @@ y[1:] / y[:-1]
 \noindent\hrule\medskip
 
 \subsubsection{Chronologický průměr}
-%%-----------------------------------------------------------------------------
 
 Pro okamžikovou časovou řadu (stejně dlouhé intervaly -- nevážený):
 
@@ -3580,7 +3460,7 @@ Průměr okamžikové časové řady; krajní hodnoty mají váhu $\tfrac{1}{2}$
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Řetězové a bazické indexy}
 
 \textbf{Řetězový index} (mezičasový): poměr k předchozímu období.
@@ -3595,11 +3475,10 @@ I_{t/1} &= I_{2/1} \cdot I_{3/2} \cdots I_{t/t-1}
 
 \noindent\hrule\medskip
 
-%%_____________________________________________________________________________
+
 \subsection{Klouzavé průměry}
 
 \subsubsection{Prostý klouzavý průměr (liché $m$)}
-%%-----------------------------------------------------------------------------
 
 Symetrické okno šířky $m = 2p+1$:
 $\tilde{y}_t = \frac{1}{m}\sum_{j=-p}^{p} y_{t+j}$.
@@ -3634,7 +3513,6 @@ np.convolve(y, np.ones(m)/m, mode='valid')
 \noindent\hrule\medskip
 
 \subsubsection{Centrovaný klouzavý průměr (sudé $m$)}
-%%-----------------------------------------------------------------------------
 
 Pro sudé $m$: centrovaný KP = průměr dvou po sobě jdoucích prostých KP délky $m$.
 Používá se pro čtvrtletní nebo měsíční data.
@@ -3668,11 +3546,10 @@ pd.Series(y).rolling(4).mean().rolling(2).mean().shift(-1)
 
 \end{funkcedict}
 
-%%_____________________________________________________________________________
+
 \subsection{Trend a sezónnost -- regresní přístup}
 
 \subsubsection{Dummy proměnné a model}
-%%-----------------------------------------------------------------------------
 
 Model: $y_t = \beta_0 + \beta_1 t + \gamma_1 D_1 + \gamma_2 D_2 + \gamma_3 D_3 + \varepsilon_t$
 (sezónnost délky 4; $D_j$ jsou dummy proměnné; 4.\ čtvrtletí je referenční kategorie).
@@ -3759,7 +3636,6 @@ pd.get_dummies(df['quarter'], drop_first=True)
 \noindent\hrule\medskip
 
 \subsubsection{Predikce na budoucí období}
-%%-----------------------------------------------------------------------------
 
 Sestavíme \texttt{data.frame} s $t$ a dummy proměnnými pro každé nové pozorování.
 
@@ -3786,7 +3662,7 @@ Predikce na budoucí kvartály. \\
 
 \begin{funkcedict}
 
-\texttt{model.predict(X\_new)} &
+\texttt{model.predict(\allowbreak X\_new)} &
 \begin{lstlisting}
 model.predict(X_new)
 \end{lstlisting}
@@ -3794,11 +3670,9 @@ model.predict(X_new)
 
 \end{funkcedict}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \clearpage
 \section{Indexní analýza}
-%%_____________________________________________________________________________
 
 Indexní analýza srovnává hodnoty ekonomických veličin (ceny, množství, výdaje)
 mezi dvěma obdobími: \textbf{základním} (index~0) a \textbf{běžným} (index~1).
@@ -3813,7 +3687,7 @@ Iq = \frac{q_1}{q_0}, \quad \Delta q = q_1 - q_0, \qquad
 IQ = \frac{Q_1}{Q_0}, \quad \Delta Q = Q_1 - Q_0
 \end{equation*}
 
-%%-----------------------------------------------------------------------------
+
 \subsection{Složené individuální indexy}
 
 Agregují individuální změny přes všechny druhy zboží.
@@ -3849,7 +3723,7 @@ kde váhy jsou množství~$q$: v~období~0 jsou váhy $q_0$, v~období~1 jsou v�
 
 \noindent\hrule\medskip
 
-%%-----------------------------------------------------------------------------
+
 \subsection{Souhrnné (Laspeyresovy a Paascheho) indexy}
 
 Souhrnné indexy fixují váhy buď v základním období (\textbf{Laspeyresovy}, superindex $L$),
@@ -3884,7 +3758,6 @@ Iq^{(P)} = \frac{\sum p_1 q_1}{\sum p_1 q_0}
 kde $p_0, p_1$ jsou ceny v základním a běžném období, $q_0, q_1$ jsou množství,
 $Q_0 = p_0 q_0$, $Q_1 = p_1 q_1$ jsou výdaje.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \clearpage
 \section{Příloha: Utility funkce v Pythonu}
@@ -4017,7 +3890,7 @@ np.sqrt(data)
 np.random.rand(100)
 \end{lstlisting}
 & Generování pole $n$ náhodných čísel z rovnoměrného rozdělení na $[0, 1)$. \\
-\texttt{np.random.uniform(a, b, n)} &
+\texttt{np.random.\allowbreak uniform(a,b,n)} &
 \begin{lstlisting}
 np.random.uniform(10, 50, 100)
 \end{lstlisting}
@@ -4210,7 +4083,7 @@ sns.regplot(data=df, x='TV', y='Sales')
 & Vykreslí bodový graf (scatter) a rovnou jím proloží regresní přímku (včetně intervalu spolehlivosti). \\
 \end{funkcedict}
 
-\subsection{Náhodné veličiny a rozdělení}
+\subsection{Náhodné veličiny a rozdělení (Python)}
 \texttt{Importy:}
 \begin{lstlisting}
 from scipy.stats import norm, binom, poisson, hypergeom, t, chi2, f, uniform, expon
@@ -4360,8 +4233,8 @@ f.rvs(dfn=3, dfd=10, size=100) # simulace
 & \texttt{dfn}$=k_1$ (čitatel), \texttt{dfd}$=k_2$ (jmenovatel). \\
 \end{funkcedict}
 
-%%-----------------------------------------------------------------------------
-\subsection{Intervaly spolehlivosti a velikost výběru}
+
+\subsection{Intervaly spolehlivosti a velikost výběru (Python)}
 
 \textbf{Interval pro průměr ($\mu$):}
 Kdy použít: pro odhad průměrné hodnoty měřitelného znaku.
@@ -4432,7 +4305,7 @@ n = math.ceil(p*(1-p) * (z_crit/delta)**2)
 & Pro podíl. Používá se pro plánování reprezentativního výzkumu. \\
 \end{funkcedict}
 
-%%-----------------------------------------------------------------------------
+
 \subsection{Testování hypotéz o průměru ($\mu$)}
 
 \textbf{Volba rozdělení:} Pro $n \ge 30$ využíváme \texttt{norm}, pro $n < 30$ využíváme \texttt{t} s \texttt{df = n-1}.
@@ -4512,12 +4385,11 @@ stats.spearmanr(x, y)
 & Měření síly monotónní závislosti (i pro nelineární vztahy). \\
 \end{funkcedict}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \clearpage
 \section{Příloha: Utility funkce v R}
 
-\subsection{Náhodné veličiny a rozdělení}
+\subsection{Náhodné veličiny a rozdělení (R)}
 \texttt{d}xxx = hustota pravděpodobnosti, \texttt{p}xxx = distribuční funkce $F(x)$, \texttt{q}xxx = kvantil, \texttt{r}xxx = náhodné číslo.
 
 \subsubsection*{Normální rozdělení (\texttt{norm})}
@@ -4671,8 +4543,8 @@ rf(100, df1=3, df2=10)  # simulace
 & d/p/q/r $=$ hustota / distribuční fce / kvantilová fce / simulace. \\
 \end{funkcedict}
 
-%%-----------------------------------------------------------------------------
-\subsection{Intervaly spolehlivosti a velikost výběru}
+
+\subsection{Intervaly spolehlivosti a velikost výběru (R)}
 
 \textbf{Interval pro průměr ($\mu$):}
 Kdy použít: pro odhad průměrné hodnoty měřitelného znaku.
@@ -4755,7 +4627,7 @@ ceiling(p*(1-p)*(z_kr/delta)^2)
 & Pro podíl. Používá se pro plánování reprezentativního výzkumu. \\
 \end{funkcedict}
 
-%%-----------------------------------------------------------------------------
+
 \subsection{Testování hypotéz}
 
 \textbf{Volba rozdělení:} Pro $n \ge 30$ lze použít \texttt{qnorm/pnorm}, pro $n < 30$ použijeme \texttt{qt/pt} s \texttt{df = n-1}.
@@ -4844,7 +4716,7 @@ t.test(x1, x2,
 & Welchův test (různé rozptyly). \\
 \end{funkcedict}
 
-%%-----------------------------------------------------------------------------
+
 \subsection{ANOVA (Jednocestná analýza rozptylu)}
 
 $\mathbf{H}_0: \mu_1 = \mu_2 = \cdots = \mu_k$,\quad $\mathbf{H}_1$: alespoň dva průměry se liší.
@@ -4877,7 +4749,7 @@ qf(0.95, df1 = k-1, df2 = n-k)
 & Kvantil F-rozdělení pro $\alpha = 0{,}05$. \\
 \end{funkcedict}
 
-%%-----------------------------------------------------------------------------
+
 \subsection{Chí-kvadrát testy}
 
 \subsubsection*{Test dobré shody}
@@ -5157,4 +5029,4 @@ mtcars |>
 
 \end{document}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
