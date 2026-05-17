@@ -3919,9 +3919,9 @@ np.linalg.norm(x, ord=2)
 np.insert(A, 1, [..], axis=0)
 			\end{lstlisting}
 			& Vloží/Smaže řádek (\texttt{axis=0}) nebo sloupec (\texttt{axis=1}). \\
-			\end{funkcedict}
+\end{funkcedict}
 			
-			\begin{funkcedict}
+\begin{funkcedict}
 				\texttt{stats.gmean(x)} &
 				\begin{lstlisting}
 stats.gmean(x)
@@ -3962,11 +3962,11 @@ np.std(x) / np.mean(x)
 np.where(df['am'] == 0, 'aut', 'man')
 				\end{lstlisting}
 				& \textbf{Podmíněný sloupec}: Pokud platí \texttt{cond}, vlož \texttt{x}, jinak \texttt{y} (jako IF v Excelu). \\
-			\end{funkcedict}
+\end{funkcedict}
 			
 \clearpage
 \subsection{Pandas: Analýza dat}
-			\begin{funkcedict}
+\begin{funkcedict}
 				\texttt{pd.to\_datetime()} &
 				\begin{lstlisting}
 df['datum'] = pd.to_datetime(df['datum'])
@@ -4005,9 +4005,9 @@ df[df['mesto'].isin(['Praha', 'Brno'])]
 df.loc[0, 'Sloupec']
 				\end{lstlisting}
 				& Výběr dat podle \textbf{názvů} (\texttt{loc}) vs. \textbf{pozice} (\texttt{iloc}). \\
-			\end{funkcedict}
+\end{funkcedict}
 			
-			\begin{funkcedict}
+\begin{funkcedict}
 				\texttt{df.isna().sum()} &
 				\begin{lstlisting}
 df.isna().sum()
@@ -4043,10 +4043,10 @@ df.pivot_table(values='C', \dots)
 df[df['mzda'].between(30000, 50000)]
 				\end{lstlisting}
 				& Filtrování hodnot v uzavřeném intervalu [a, b]. \\
-			\end{funkcedict}
+\end{funkcedict}
 			
 			\subsection{Matplotlib a Seaborn: Vizualizace}
-			\begin{funkcedict}
+\begin{funkcedict}
 				\texttt{df.boxplot()} &
 				\begin{lstlisting}
 df.boxplot(column='Y', by='X')
@@ -4080,7 +4080,7 @@ import seaborn as sns
 sns.regplot(data=df, x='TV', y='Sales')
 				\end{lstlisting}
 				& Vykreslí bodový graf (scatter) a rovnou jím proloží regresní přímku (včetně intervalu spolehlivosti). \\
-			\end{funkcedict}
+\end{funkcedict}
 			
 \clearpage
 \section{Příloha: Utility funkce v R}
@@ -4115,7 +4115,7 @@ library(readr)
 \medskip\noindent\textbf{Datové typy a konverze}
 
 \medskip
-			\begin{funkcedict}
+\begin{funkcedict}
 				\texttt{class(x)} &
 				\begin{lstlisting}
 class(3.14)    # "numeric"
@@ -4146,10 +4146,11 @@ is.na(Inf)   # FALSE
 colSums(is.na(df)) # NA po sl.
 				\end{lstlisting}
 				& Detekce chybějící hodnoty (\texttt{NA/NaN}). \\
-			\end{funkcedict}
+\end{funkcedict}
 			
 \medskip\noindent\textbf{Vektory}
-			\begin{funkcedict}
+
+\begin{funkcedict}
 				\texttt{c(...)} &
 				\begin{lstlisting}
 c(1, 2, 3)
@@ -4183,12 +4184,13 @@ names(x) <- c("a","b","c")
 x["a"]  # výběr dle jména
 				\end{lstlisting}
 				& Pojmenování prvků vektoru. \\
-			\end{funkcedict}
+\end{funkcedict}
 			
 \subsection{Práce s daty v R}
 
 \medskip\noindent\textbf{Data frames}
-			\begin{funkcedict}
+
+\begin{funkcedict}
 				\texttt{str(df) / summary(df)} &
 				\begin{lstlisting}
 str(mtcars)
@@ -4227,10 +4229,11 @@ df[-1, ]   # odebrání 1. řádku
 df[, -2]   # odebrání 2. sloupce
 				\end{lstlisting}
 				& Přidání nebo odebrání řádků / sloupců. \\
-			\end{funkcedict}
+\end{funkcedict}
 			
 \medskip\noindent\textbf{Import a export dat}
-			\begin{funkcedict}
+
+\begin{funkcedict}
 				\texttt{read.table()} &
 				\begin{lstlisting}
 read.table("data.csv",
@@ -4256,10 +4259,11 @@ getwd()
 setwd("C:/Users/.../data")
 				\end{lstlisting}
 				& Zjistí nebo nastaví pracovní složku. \\
-			\end{funkcedict}
+\end{funkcedict}
 			
 \medskip\noindent\textbf{Četnosti a diskretizace}
-			\begin{funkcedict}
+
+\begin{funkcedict}
 				\texttt{table(x)} &
 				\begin{lstlisting}
 ni <- table(data$kraj)
@@ -4279,10 +4283,11 @@ cut(x,
   include.lowest = TRUE)
 				\end{lstlisting}
 				& Diskretizuje spojitou proměnnou do intervalů. \\
-			\end{funkcedict}
+\end{funkcedict}
 			
 \medskip\noindent\textbf{Balíček dplyr} (\texttt{|>} = roura: výsledek vlevo jde jako 1.\ argument vpravo)
-			\begin{funkcedict}
+
+\begin{funkcedict}
 				\texttt{filter()} &
 				\begin{lstlisting}
 mtcars |> filter(mpg > 20)
@@ -4335,6 +4340,6 @@ mtcars |>
   filter(cyl==6) |> pull(mpg)
 				\end{lstlisting}
 				& Extrahuje sloupec jako prostý vektor. \\
-			\end{funkcedict}
+\end{funkcedict}
 			
 \end{document}
