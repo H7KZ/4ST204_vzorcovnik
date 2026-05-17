@@ -3087,14 +3087,20 @@ stats.chisquare(O, f_exp=E)
 \subsection{Chí-kvadrát test nezávislosti}
 
 \textbf{H$_0$:} řádkový a sloupcový znak jsou nezávislé.
+Kontingenční tabulka $r \times s$: $n_{i.} = \sum_{j}n_{ij}$ (řádkové součty), $n_{.j} = \sum_{i}n_{ij}$ (sloupcové součty).
 
 \begin{equation*}
-e_{ij} = \frac{n_{i\bullet}\, n_{\bullet j}}{n}, \qquad
-G = \sum_{i,j} \frac{(n_{ij} - e_{ij})^2}{e_{ij}} \sim \chi^2\bigl((r-1)(s-1)\bigr)
+n'_{ij} = \frac{n_{i.}\, n_{.j}}{n},\quad n'_{ij} \ge 5, \qquad
+G = \sum_{i=1}^{r}\sum_{j=1}^{s} \frac{(n_{ij} - n'_{ij})^2}{n'_{ij}} \sim \chi^2\bigl((r-1)(s-1)\bigr)
 \end{equation*}
 
-Síla závislosti: Cramérovo $V = \sqrt{G / \bigl(n \cdot (\min(r,s)-1)\bigr)} \in [0,1]$. \\
-Interpretace: $< 0{,}1$ zanedbatelná $\cdot$ $0{,}1$--$0{,}3$ slabá $\cdot$ $0{,}3$--$0{,}5$ středně silná $\cdot$ $> 0{,}5$ silná.
+Pro tabulku $2 \times 2$:
+\begin{equation*}
+G = \frac{n\,(n_{11}n_{22} - n_{12}n_{21})^2}{n_{1.}\, n_{2.}\, n_{.1}\, n_{.2}}
+\end{equation*}
+
+Síla závislosti: Pearsonovo $C = \sqrt{\dfrac{G}{n+G}}$;\quad Cramérovo $V = \sqrt{\dfrac{G}{n\,(\min(r,s)-1)}} \in [0,1]$, kde $m = \min(r,s)$. \\
+Interpretace $V$: $< 0{,}1$ zanedbatelná $\cdot$ $0{,}1$--$0{,}3$ slabá $\cdot$ $0{,}3$--$0{,}5$ středně silná $\cdot$ $> 0{,}5$ silná.
 
 \paragraph{Implementace v R}\mbox{}\par
 
@@ -3139,6 +3145,46 @@ chi2, p, df, exp = stats.chi2_contingency(table)
 \end{funkcedict}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%_____________________________________________________________________________
+\subsection{Stupně volnosti -- přehled}
+
+\textbf{Zlaté pravidlo:} stupně volnosti $=$ počet pozorování $-$ počet odhadovaných parametrů.
+
+\medskip
+\noindent\textbf{T-testy}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{0.42\textwidth} p{0.20\textwidth} p{0.32\textwidth}}
+\textbf{Test} & \textbf{df} & \textbf{Poznámka} \\
+\midrule
+Jednovýběrový t-test & $df = n-1$ & $n$ = počet pozorování \\
+Párový t-test & $df = n_{\text{párů}}-1$ & $n$ = počet párů \\
+Dvouvýběrový t-test (shoda rozptylů) & $df = n+m-2$ & $n,m$ = velikosti skupin \\
+Dvouvýběrový t-test (Welchův) & $df \approx \text{Welch}$ & složitý vzorec -- spočítá program \\
+\end{tabular}
+
+\medskip
+\noindent\textbf{F-testy}
+
+\begin{tabular}{p{0.42\textwidth} p{0.14\textwidth} p{0.14\textwidth} p{0.24\textwidth}}
+\textbf{Test} & $df_1$ & $df_2$ & \textbf{Poznámka} \\
+\midrule
+Test shody rozptylů & $n-1$ & $m-1$ & dva df -- jeden pro každý soubor \\
+ANOVA (F-test) & $k-1$ & $n-k$ & $k$ = počet skupin \\
+\end{tabular}
+
+\medskip
+\noindent\textbf{Chí-kvadrát testy}
+
+\begin{tabular}{p{0.50\textwidth} p{0.46\textwidth}}
+\textbf{Test} & \textbf{df} \\
+\midrule
+Test dobré shody & $df = k-1$ \quad ($k$ = počet kategorií) \\
+Test nezávislosti (konting. tabulka) & $df = (r-1)(s-1)$ \quad ($r$ řádků, $s$ sloupců) \\
+\end{tabular}
+
+\renewcommand{\arraystretch}{1.0}
 
 \clearpage
 \section{Analýza závislosti}
@@ -3307,10 +3353,11 @@ print(m2.rsquared_adj)
 %%-----------------------------------------------------------------------------
 
 \begin{equation*}
-S_Y = S_T + S_R, \qquad R^2 = \frac{S_T}{S_Y} \in [0,1]
+S_Y = S_T + S_R, \qquad R^2 = \frac{S_T}{S_Y} \in [0,1], \qquad
+R^2_{ADJ} = 1 - (1-R^2)\frac{n-1}{n-p}
 \end{equation*}
 
-kde $S_Y = \sum(y_i-\bar{y})^2$ (celkový), $S_T = \sum(\hat{y}_i-\bar{y})^2$ (regresní), $S_R = \sum e_i^2$ (reziduální).
+kde $S_Y = \sum(y_i-\bar{y})^2$ (celkový), $S_T = \sum(\hat{y}_i-\bar{y})^2$ (regresní), $S_R = \sum e_i^2$ (reziduální), $p$ = počet odhadovaných parametrů (pro jednoduchou regresi $p=2$).
 
 \paragraph{Implementace v R}\mbox{}\par
 
@@ -3441,6 +3488,7 @@ pred.summary_frame() # Obsahuje intervaly
 
 \begin{align*}
 \text{1.\ diference:} \quad &\Delta y_t = y_t - y_{t-1} \\
+\text{Průměrná 1.\ diference:} \quad &\bar{\Delta} = \frac{1}{n-1}\sum_{t=2}^{n}\Delta_t = \frac{y_n - y_1}{n-1} \\
 \text{Tempo růstu:} \quad &k_t = y_t / y_{t-1} \\
 \text{Průměrné tempo:} \quad &\bar{k} = \sqrt[n-1]{y_n/y_1}
 \end{align*}
@@ -3491,10 +3539,16 @@ y[1:] / y[:-1]
 \subsubsection{Chronologický průměr}
 %%-----------------------------------------------------------------------------
 
-Pro okamžikovou časovou řadu (stejně dlouhé intervaly):
+Pro okamžikovou časovou řadu (stejně dlouhé intervaly -- nevážený):
 
 \begin{equation*}
 \bar{y} = \frac{\tfrac{1}{2}y_1 + y_2 + \dots + y_{n-1} + \tfrac{1}{2}y_n}{n-1}
+\end{equation*}
+
+Pro nestejně dlouhé intervaly (vážený chronologický průměr, délky intervalů $d_1,\ldots,d_{n-1}$):
+
+\begin{equation*}
+\bar{y} = \frac{\dfrac{y_1+y_2}{2}d_1 + \dfrac{y_2+y_3}{2}d_2 + \cdots + \dfrac{y_{n-1}+y_n}{2}d_{n-1}}{d_1 + d_2 + \cdots + d_{n-1}}
 \end{equation*}
 
 \paragraph{Implementace v R}\mbox{}\par
@@ -3523,6 +3577,21 @@ Průměr okamžikové časové řady; krajní hodnoty mají váhu $\tfrac{1}{2}$
 & Průměr okamžikové časové řady. \\
 
 \end{funkcedict}
+
+%%_____________________________________________________________________________
+\subsection{Řetězové a bazické indexy}
+
+\textbf{Řetězový index} (mezičasový): poměr k předchozímu období.
+\textbf{Bazický index}: poměr k základnímu období (období 1).
+
+\begin{align*}
+k_t = I_{t/t-1} &= \frac{y_t}{y_{t-1}}
+&\bar{k} &= \sqrt[n-1]{k_2 k_3 \cdots k_n} = \sqrt[n-1]{\frac{y_n}{y_1}} \\[4pt]
+I_{t/1} &= I_{2/1} \cdot I_{3/2} \cdots I_{t/t-1}
+&I_{k/t-1} &= \frac{y_t}{y_{t-1}} = \frac{I_{t/1}}{I_{(t-1)/1}}
+\end{align*}
+
+\noindent\hrule\medskip
 
 %%_____________________________________________________________________________
 \subsection{Klouzavé průměry}
@@ -3636,7 +3705,29 @@ Odhaduje lineární trend a sezónní odchylky; $\hat{\gamma}_j$ = odchylka $j$-
 
 \subsubsection{Dekompozice časové řady}
 
-Rozklad časové řady na trend, sezónnost a reziduální složku.
+Rozklad časové řady na trend $T_t$, sezónní $S_t$, cyklickou $C_t$ a reziduální složku $\varepsilon_t$:
+
+\begin{equation*}
+y_t = T_t + S_t + C_t + \varepsilon_t \qquad \text{(aditivní model)}
+\qquad\qquad
+y_t = T_t \cdot S_t \cdot C_t \cdot \varepsilon_t \qquad \text{(multiplikativní model)}
+\end{equation*}
+
+Rezidua a kvalita modelu (trend $\hat{y}_t$, MSE, Durbin-Watson $D$):
+
+\begin{equation*}
+e_t = y_t - \hat{y}_t, \qquad
+MSE = \frac{\displaystyle\sum_{t=1}^{n} e_t^2}{n}, \qquad
+D = \frac{\displaystyle\sum_{t=2}^{n}(e_t - e_{t-1})^2}{\displaystyle\sum_{t=1}^{n} e_t^2}
+\end{equation*}
+
+Sezónní složky (regresní přístup, sezónnost délky 4; $a_i$ jsou odhadnuté koeficienty dummy proměnných):
+
+\begin{equation*}
+\bar{a} = \frac{a_1 + a_2 + a_3}{4}, \qquad
+S_{i+4j} = a_i - \bar{a}\;(i=1,2,3), \qquad
+S_{4+4j} = -\bar{a}
+\end{equation*}
 
 \paragraph{Implementace v Python}\mbox{}\par
 
