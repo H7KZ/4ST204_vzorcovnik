@@ -3154,7 +3154,8 @@ chi2, p, df, exp = stats.chi2_contingency(table)
 \medskip
 \noindent\textbf{T-testy}
 
-\renewcommand{\arraystretch}{1.3}
+{\small
+\renewcommand{\arraystretch}{1.2}
 \begin{tabular}{p{0.42\textwidth} p{0.20\textwidth} p{0.32\textwidth}}
 \textbf{Test} & \textbf{df} & \textbf{Poznámka} \\
 \midrule
@@ -3183,6 +3184,7 @@ ANOVA (F-test) & $k-1$ & $n-k$ & $k$ = počet skupin \\
 Test dobré shody & $df = k-1$ \quad ($k$ = počet kategorií) \\
 Test nezávislosti (konting. tabulka) & $df = (r-1)(s-1)$ \quad ($r$ řádků, $s$ sloupců) \\
 \end{tabular}
+} % end \small
 
 \renewcommand{\arraystretch}{1.0}
 
@@ -4046,7 +4048,7 @@ np.insert(A, 1, [..], axis=0)
 \end{lstlisting}
 & Vloží/Smaže řádek (\texttt{axis=0}) nebo sloupec (\texttt{axis=1}). \\
 \end{funkcedict}
-\clearpage
+
 \begin{funkcedict}
 \texttt{stats.gmean(x)} &
 \begin{lstlisting}
@@ -4078,11 +4080,6 @@ np.std(data, ddof=0)
 np.std(data, ddof=1)
 \end{lstlisting}
 & Výběrová směrodatná odchylka $S$. \\
-\texttt{np.ptp(x)} &
-\begin{lstlisting}
-np.ptp(data)
-\end{lstlisting}
-& \textbf{Variační rozpětí} $R = x_{max} - x_{min}$. \\
 \texttt{v\_x = std / mean} &
 \begin{lstlisting}
 np.std(x) / np.mean(x)
@@ -4095,9 +4092,9 @@ np.where(df['am'] == 0, 'aut', 'man')
 & \textbf{Podmíněný sloupec}: Pokud platí \texttt{cond}, vlož \texttt{x}, jinak \texttt{y} (jako IF v Excelu). \\
 \end{funkcedict}
 
+\clearpage
 \subsection{Pandas: Analýza dat}
 \begin{funkcedict}
-
 \texttt{pd.to\_datetime()} &
 \begin{lstlisting}
 df['datum'] = pd.to_datetime(df['datum'])
@@ -4136,6 +4133,9 @@ df[df['mesto'].isin(['Praha', 'Brno'])]
 df.loc[0, 'Sloupec']
 \end{lstlisting}
 & Výběr dat podle \textbf{názvů} (\texttt{loc}) vs. \textbf{pozice} (\texttt{iloc}). \\
+\end{funkcedict}
+
+\begin{funkcedict}
 \texttt{df.isna().sum()} &
 \begin{lstlisting}
 df.isna().sum()
