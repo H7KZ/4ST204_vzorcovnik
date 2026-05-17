@@ -3703,7 +3703,95 @@ model.predict(X_new)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\clearpage
+\section{Indexní analýza}
+%%_____________________________________________________________________________
 
+Indexní analýza srovnává hodnoty ekonomických veličin (ceny, množství, výdaje)
+mezi dvěma obdobími: \textbf{základním} (index~0) a \textbf{běžným} (index~1).
+
+\medskip
+\noindent Základní vztahy: $Q = p \cdot q$ (výdaj = cena $\times$ množství),
+$IQ = Ip \cdot Iq$
+
+\begin{equation*}
+Ip = \frac{p_1}{p_0}, \quad \Delta p = p_1 - p_0, \qquad
+Iq = \frac{q_1}{q_0}, \quad \Delta q = q_1 - q_0, \qquad
+IQ = \frac{Q_1}{Q_0}, \quad \Delta Q = Q_1 - Q_0
+\end{equation*}
+
+%%-----------------------------------------------------------------------------
+\subsection{Složené individuální indexy}
+
+Agregují individuální změny přes všechny druhy zboží.
+
+\begin{equation*}
+I(\Sigma q) = \frac{\sum q_1}{\sum q_0}
+= \frac{\sum Iq \cdot q_0}{\sum q_0}
+= \frac{\sum q_1}{\sum \dfrac{q_1}{Iq}},
+\qquad
+\Delta(\Sigma q) = \sum q_1 - \sum q_0
+\end{equation*}
+
+\begin{equation*}
+I(\Sigma Q) = \frac{\sum Q_1}{\sum Q_0}
+= \frac{\sum p_1 q_1}{\sum p_0 q_0}
+= \frac{\sum IQ \cdot Q_0}{\sum Q_0}
+= \frac{\sum Q_1}{\sum \dfrac{Q_1}{IQ}},
+\qquad
+\Delta(\Sigma Q) = \sum Q_1 - \sum Q_0
+\end{equation*}
+
+\begin{equation*}
+I\bar{p} = \frac{\bar{p}_1}{\bar{p}_0}
+= \frac{\dfrac{\sum Q_1}{\sum q_1}}{\dfrac{\sum Q_0}{\sum q_0}}
+= \frac{\dfrac{\sum p_1 q_1}{\sum q_1}}{\dfrac{\sum p_0 q_0}{\sum q_0}},
+\qquad
+\Delta\bar{p} = \bar{p}_1 - \bar{p}_0
+= \frac{\sum p_1 q_1}{\sum q_1} - \frac{\sum p_0 q_0}{\sum q_0}
+\end{equation*}
+
+kde $\bar{p}$ je vážený průměr cen (\texttt{weighted.mean}),
+kde váhy jsou množství~$q$: v~období~0 jsou váhy $q_0$, v~období~1 jsou váhy~$q_1$.
+
+\noindent\hrule\medskip
+
+%%-----------------------------------------------------------------------------
+\subsection{Souhrnné (Laspeyresovy a Paascheho) indexy}
+
+Souhrnné indexy fixují váhy buď v základním období (\textbf{Laspeyresovy}, superindex $L$),
+nebo v běžném období (\textbf{Paascheho}, superindex $P$).
+
+\medskip
+\noindent\textbf{Souhrnné cenové indexy:}
+
+\begin{equation*}
+Ip^{(L)} = \frac{\sum p_1 q_0}{\sum p_0 q_0}
+= \frac{\sum Ip \cdot p_0 q_0}{\sum p_0 q_0}
+= \frac{\sum Ip \cdot Q_0}{\sum Q_0}
+\qquad
+Ip^{(P)} = \frac{\sum p_1 q_1}{\sum p_0 q_1}
+= \frac{\sum p_1 q_1}{\sum \dfrac{p_1 q_1}{Ip}}
+= \frac{\sum Q_1}{\sum \dfrac{Q_1}{Ip}}
+\end{equation*}
+
+\medskip
+\noindent\textbf{Souhrnné množstevní indexy:}
+
+\begin{equation*}
+Iq^{(L)} = \frac{\sum p_0 q_1}{\sum p_0 q_0}
+= \frac{\sum Iq \cdot p_0 q_0}{\sum p_0 q_0}
+= \frac{\sum Iq \cdot Q_0}{\sum Q_0}
+\qquad
+Iq^{(P)} = \frac{\sum p_1 q_1}{\sum p_1 q_0}
+= \frac{\sum p_1 q_1}{\sum \dfrac{p_1 q_1}{Iq}}
+= \frac{\sum Q_1}{\sum \dfrac{Q_1}{Iq}}
+\end{equation*}
+
+kde $p_0, p_1$ jsou ceny v základním a běžném období, $q_0, q_1$ jsou množství,
+$Q_0 = p_0 q_0$, $Q_1 = p_1 q_1$ jsou výdaje.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \clearpage
 \section{Příloha: Utility funkce v Pythonu}
@@ -4181,6 +4269,158 @@ f.rvs(dfn=3, dfd=10, size=100) # simulace
 & \texttt{dfn}$=k_1$ (čitatel), \texttt{dfd}$=k_2$ (jmenovatel). \\
 \end{funkcedict}
 
+%%-----------------------------------------------------------------------------
+\subsection{Intervaly spolehlivosti a velikost výběru}
+
+\textbf{Interval pro průměr ($\mu$):}
+Kdy použít: pro odhad průměrné hodnoty měřitelného znaku.
+Normální rozdělení (\texttt{norm}): pokud známe rozptyl $\sigma^2$ nebo je výběr velký ($n \ge 30$).
+Studentovo t-rozdělení (\texttt{t}): pokud rozptyl populace neznáme a výběr je malý ($n < 30$).
+Typy kvantilů: pro \textbf{oboustranný} interval $1 - \alpha/2$, pro \textbf{jednostranný} $1 - \alpha$.
+\textbf{Parametry:} \texttt{x\_bar} (výběrový průměr), \texttt{s} (výběrová směr. odchylka), \texttt{n} (rozsah výběru), \texttt{alpha} ($\alpha$, hladina významnosti).
+
+\begin{funkcedict}
+Kritická hodnota &
+\begin{lstlisting}
+crit = t.ppf(1 - alpha/2, df=n-1)
+\end{lstlisting}
+& Kvantil pro t-interval (neznámé $\sigma$). Pro velké $n$ lze nahradit \texttt{norm.ppf}. \\
+Mezní chyba (Mean) &
+\begin{lstlisting}
+err = crit * (s / np.sqrt(n))
+\end{lstlisting}
+& Výpočet odchylky pro průměr. \texttt{s} je výběrová směrodatná odchylka. \\
+Meze intervalu &
+\begin{lstlisting}
+lower, upper = x_bar - err, x_bar + err
+\end{lstlisting}
+& Skutečný parametr leží v intervalu s pravděpodobností $1 - \alpha$. \\
+\end{funkcedict}
+
+\medskip
+\textbf{Interval pro podíl ($\pi$):}
+Kdy použít: pro odhad procentuálního zastoupení (např. podíl zmetků, preference voličů).
+Vždy využíváme normální rozdělení (Z-kvantil).
+Typy kvantilů: oboustranný $1 - \alpha/2$, jednostranný $1 - \alpha$.
+\textbf{Parametry:} \texttt{p} (výběrová relativní četnost), \texttt{n} (celkový počet testovaných jednotek).
+
+\begin{funkcedict}
+Kritická hodnota &
+\begin{lstlisting}
+z_crit = norm.ppf(1 - alpha / 2)
+\end{lstlisting}
+& Pro podíl se vždy používá normální rozdělení (Z-kvantil). \\
+Mezní chyba (Prop) &
+\begin{lstlisting}
+err = z_crit * np.sqrt(p * (1-p) / n)
+\end{lstlisting}
+& Výpočet odchylky pro proporci $p$. \\
+Meze intervalu &
+\begin{lstlisting}
+lower, upper = p - err, p + err
+\end{lstlisting}
+& Skutečný parametr leží v intervalu s pravděpodobností $1 - \alpha$. \\
+\end{funkcedict}
+
+\medskip
+\textbf{Potřebná velikost výběru ($n$):}
+Hledáme, kolik jednotek musíme vybrat, aby se náš odhad nemýlil o více než stanovenou chybu $\Delta$.
+Výsledek \textbf{vždy zaokrouhlit nahoru} (funkce \texttt{math.ceil}).
+\textbf{Parametry:} \texttt{delta} ($\Delta$, požadovaná přesnost), \texttt{sigma} (předpokládaná směr. odchylka).
+
+\begin{funkcedict}
+Minimální $n$ (Mean) &
+\begin{lstlisting}
+n = math.ceil((z_crit * sigma / delta)**2)
+\end{lstlisting}
+& Pro průměr. $\Delta$ je cílová přesnost. Výsledek vždy zaokrouhlit nahoru. \\
+Minimální $n$ (Prop) &
+\begin{lstlisting}
+n = math.ceil(p*(1-p) * (z_crit/delta)**2)
+\end{lstlisting}
+& Pro podíl. Používá se pro plánování reprezentativního výzkumu. \\
+\end{funkcedict}
+
+%%-----------------------------------------------------------------------------
+\subsection{Testování hypotéz o průměru ($\mu$)}
+
+\textbf{Volba rozdělení:} Pro $n \ge 30$ využíváme \texttt{norm}, pro $n < 30$ využíváme \texttt{t} s \texttt{df = n-1}.
+\textbf{Parametry:} \texttt{mu0} (testovaná hodnota), \texttt{x\_bar} (naměřený průměr), \texttt{s} (odchylka), \texttt{n} (rozsah).
+
+\textbf{1. Výpočet testového kritéria:}
+\begin{lstlisting}
+u = (x_bar - mu0) / (s / np.sqrt(n))
+\end{lstlisting}
+
+\textbf{2. Vyhodnocení testu ($p$-hodnotou):}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lll}
+\textbf{Typ testu} & \textbf{Alternativa $H_1$} & \textbf{Vzorec pro $p$-hodnotu (Python)} \\
+\midrule
+Levostranný & $E(X) < \mu_0$ & \texttt{p = norm.cdf(u)} \\
+Pravostranný & $E(X) > \mu_0$ & \texttt{p = 1 - norm.cdf(u)} \\
+Oboustranný & $E(X) \ne \mu_0$ & \texttt{p = 2 * (1 - norm.cdf(abs(u)))} \\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{ll}
+\textbf{Podmínka} & \textbf{Výsledek testu} \\
+\midrule
+$p < \alpha$ & \textbf{ZAMÍTÁME} $H_0$ (rozdíl je statisticky významný) \\
+$p \ge \alpha$ & \textbf{NEZAMÍTÁME} $H_0$ (rozdíl je pravděpodobně náhodný) \\
+\end{tabular}
+\end{center}
+
+\textbf{3. Automatické statistické testy (z pole dat):}
+\textbf{Parametry:} \texttt{data}, \texttt{A}, \texttt{B}, \texttt{C}: nezávislé vzorky; \texttt{pred}, \texttt{po}: párová měření; \texttt{O}, \texttt{E}: pozorované/očekávané četnosti; \texttt{table}: kontingenční tabulka.
+
+\begin{funkcedict}
+Jednovýběrový t-test &
+\begin{lstlisting}
+stats.ttest_1samp(data, popmean=mu0)
+\end{lstlisting}
+& Porovnání průměru vzorku s pevnou hodnotou $\mu_0$. \\
+Dvouvýběrový t-test &
+\begin{lstlisting}
+stats.ttest_ind(A, B, equal_var=False)
+\end{lstlisting}
+& Porovnání průměrů dvou nezávislých skupin (Welchův test). \\
+Párový t-test &
+\begin{lstlisting}
+stats.ttest_rel(po, pred)
+\end{lstlisting}
+& Porovnání stejné skupiny ve dvou různých situacích. \\
+ANOVA &
+\begin{lstlisting}
+stats.f_oneway(A, B, C)
+\end{lstlisting}
+& Testování shody průměrů u tří a více skupin. \\
+Chí-kvadrát shoda &
+\begin{lstlisting}
+stats.chisquare(O, f_exp=E)
+\end{lstlisting}
+& Test dobré shody (spravedlivost kostky nebo náhodnost). \\
+Chí-kvadrát nezávislost &
+\begin{lstlisting}
+stats.chi2_contingency(table)
+\end{lstlisting}
+& Test závislosti kategoriálních znaků z kontingenční tabulky. \\
+Pearsonova korelace &
+\begin{lstlisting}
+stats.pearsonr(x, y)
+\end{lstlisting}
+& Měření síly lineární závislosti dvou spojitých proměnných. \\
+Spearmanova korelace &
+\begin{lstlisting}
+stats.spearmanr(x, y)
+\end{lstlisting}
+& Měření síly monotónní závislosti (i pro nelineární vztahy). \\
+\end{funkcedict}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \clearpage
@@ -4338,6 +4578,266 @@ rf(100, df1=3, df2=10)  # simulace
 # pouzit: stats::df()
 \end{lstlisting}
 & d/p/q/r $=$ hustota / distribuční fce / kvantilová fce / simulace. \\
+\end{funkcedict}
+
+%%-----------------------------------------------------------------------------
+\subsection{Intervaly spolehlivosti a velikost výběru}
+
+\textbf{Interval pro průměr ($\mu$):}
+Kdy použít: pro odhad průměrné hodnoty měřitelného znaku.
+Normální rozdělení: pokud známe $\sigma^2$ nebo je výběr velký ($n \ge 30$) — použijeme \texttt{qnorm}.
+t-rozdělení: neznámý $\sigma^2$ nebo malý výběr ($n < 30$) — použijeme \texttt{qt} s \texttt{df = n-1}.
+Jednostranný IS: kvantil $1 - \alpha$ místo $1 - \alpha/2$.
+\textbf{Parametry:} \texttt{x} (vektor dat), \texttt{xbar} (průměr), \texttt{s} (výběrová směr. odchylka), \texttt{n} (rozsah), \texttt{alpha} ($\alpha$).
+
+\begin{funkcedict}
+\texttt{t.test(x)\$conf.int} &
+\begin{lstlisting}
+x <- c(163,175,177,165,171,174)
+t.test(x, conf.level = 0.95)$conf.int
+\end{lstlisting}
+& Vrací 95\,\% IS pro $\mu$ (neznámý $\sigma^2$). \\
+Ručně (t-rozdělení) &
+\begin{lstlisting}
+xbar <- mean(x); s <- sd(x)
+n <- length(x); alpha <- 0.05
+t_kr <- qt(1 - alpha/2, df = n - 1)
+c(xbar - t_kr*s/sqrt(n),
+  xbar + t_kr*s/sqrt(n))
+\end{lstlisting}
+& Ruční výpočet IS s t-rozdělením. \\
+Ručně (Z, známý $\sigma$) &
+\begin{lstlisting}
+sigma <- 7
+z_kr <- qnorm(1 - alpha/2)
+c(xbar - z_kr*sigma/sqrt(n),
+  xbar + z_kr*sigma/sqrt(n))
+\end{lstlisting}
+& Ruční výpočet IS s normálním rozdělením (Z-kvantil). \\
+\end{funkcedict}
+
+\medskip
+\textbf{Interval pro podíl ($\pi$):}
+Kdy použít: pro odhad procentuálního zastoupení (např. podíl zmetků, preference voličů).
+Vždy využíváme normální rozdělení (Z-kvantil).
+Typy kvantilů: oboustranný $1 - \alpha/2$, jednostranný $1 - \alpha$.
+\textbf{Parametry:} \texttt{x} (počet úspěchů), \texttt{n} (celkový počet), $p = x/n$.
+
+\begin{funkcedict}
+\texttt{prop.test(x, n)\$conf.int} &
+\begin{lstlisting}
+prop.test(x=110, n=200,
+          conf.level=0.95)$conf.int
+\end{lstlisting}
+& Wilsonův IS pro proporci (vestavěná funkce). \\
+Ručně (Waldův IS) &
+\begin{lstlisting}
+x_vol <- 110; n_vol <- 200
+p <- x_vol / n_vol
+z_kr <- qnorm(0.975)
+se <- sqrt(p*(1-p)/n_vol)
+c(p - z_kr*se, p + z_kr*se)
+\end{lstlisting}
+& Waldův IS -- jednoduchá normální aproximace. \\
+\end{funkcedict}
+
+\medskip
+\textbf{Potřebná velikost výběru ($n$):}
+Hledáme, kolik jednotek musíme vybrat, aby se náš odhad nemýlil o více než stanovenou chybu $\Delta$.
+Výsledek \textbf{vždy zaokrouhlit nahoru} (funkce \texttt{ceiling()}).
+\textbf{Parametry:} \texttt{delta} ($\Delta$, požadovaná přesnost), \texttt{sigma} (předpokládaná směr. odchylka).
+
+\begin{funkcedict}
+Minimální $n$ (průměr) &
+\begin{lstlisting}
+alpha <- 0.05; sigma <- 10
+delta <- 2
+z_kr <- qnorm(1 - alpha/2)
+ceiling((z_kr * sigma / delta)^2)
+\end{lstlisting}
+& Pro průměr. $\Delta$ je cílová přesnost. Výsledek vždy zaokrouhlit nahoru. \\
+Minimální $n$ (podíl) &
+\begin{lstlisting}
+p <- 0.5; delta <- 0.05
+ceiling(p*(1-p)*(z_kr/delta)^2)
+\end{lstlisting}
+& Pro podíl. Používá se pro plánování reprezentativního výzkumu. \\
+\end{funkcedict}
+
+%%-----------------------------------------------------------------------------
+\subsection{Testování hypotéz}
+
+\textbf{Volba rozdělení:} Pro $n \ge 30$ lze použít \texttt{qnorm/pnorm}, pro $n < 30$ použijeme \texttt{qt/pt} s \texttt{df = n-1}.
+\textbf{Parametry:} \texttt{mu0} (testovaná hodnota), \texttt{xbar} (výběrový průměr), \texttt{s} (výběrová směr. odchylka), \texttt{n} (rozsah), \texttt{alpha} ($\alpha$).
+
+\subsubsection*{1. Jednovýběrový t-test (střední hodnota)}
+
+$T = (x_{\text{bar}} - \mu_0) / (s / \sqrt{n}) \sim t(n-1)$
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lll}
+\textbf{Typ testu} & \textbf{Alternativa $H_1$} & \textbf{p-hodnota v R} \\
+\midrule
+Levostranný & $\mu < \mu_0$ & \texttt{pt(T, df=n-1)} \\
+Pravostranný & $\mu > \mu_0$ & \texttt{1 - pt(T, df=n-1)} \\
+Oboustranný & $\mu \ne \mu_0$ & \texttt{2*(1 - pt(abs(T), df=n-1))} \\
+\end{tabular}
+\end{center}
+
+\begin{funkcedict}
+\texttt{t.test(x, mu=mu0, alternative=\ldots)} &
+\begin{lstlisting}
+t.test(x, mu = 25000,
+       alternative = "less")
+# "greater" / "two.sided"
+\end{lstlisting}
+& Automatický t-test z vektoru dat. \\
+Ručně &
+\begin{lstlisting}
+n <- 49; xbar <- 23500; alpha <- 0.05
+mu0 <- 25000; s <- 5500
+T <- (xbar - mu0)/(s/sqrt(n))
+p_val <- pt(T, df = n - 1)
+t_kr <- qt(alpha, df = n - 1)
+\end{lstlisting}
+& Ruční výpočet (jednostranný levostranný). \\
+\end{funkcedict}
+
+\subsubsection*{2. Párový t-test}
+
+\begin{funkcedict}
+\texttt{t.test(pred, po, paired=TRUE)} &
+\begin{lstlisting}
+t.test(pred, po,
+       paired = TRUE,
+       alternative = "two.sided")
+\end{lstlisting}
+& Porovnání stejné skupiny ve dvou různých situacích (např. před a po zásahu). \\
+\end{funkcedict}
+
+\subsubsection*{3. Test proporce}
+
+$Z = \dfrac{\hat{p} - \pi_0}{\sqrt{\pi_0(1-\pi_0)/n}} \sim \mathcal{N}(0,1)$
+
+\begin{funkcedict}
+\texttt{prop.test(x, n, p=p0, \ldots)} &
+\begin{lstlisting}
+prop.test(x=90, n=150, p=0.5,
+          alternative="two.sided",
+          correct=FALSE)
+\end{lstlisting}
+& Bez Yatesovy korekce odpovídá ručnímu Z-testu. \\
+Ručně &
+\begin{lstlisting}
+p0 <- 0.5; n <- 150; orel <- 90
+phat <- orel/n
+Z <- (phat-p0)/sqrt(p0*(1-p0)/n)
+z_kr <- qnorm(1 - 0.01/2)
+p_val <- 2*(1 - pnorm(abs(Z)))
+\end{lstlisting}
+& Oboustranný Z-test symetrie mince ($\alpha = 0{,}01$). \\
+\end{funkcedict}
+
+\subsubsection*{4. Dvouvýběrový t-test (Welchův)}
+
+$T = \dfrac{\bar{x}_1 - \bar{x}_2}{\sqrt{s_1^2/n_1 + s_2^2/n_2}}$
+
+\begin{funkcedict}
+\texttt{t.test(x1, x2, var.equal=FALSE)} &
+\begin{lstlisting}
+t.test(x1, x2,
+       var.equal = FALSE,
+       alternative = "two.sided")
+\end{lstlisting}
+& Welchův test (různé rozptyly). \\
+\end{funkcedict}
+
+%%-----------------------------------------------------------------------------
+\subsection{ANOVA (Jednocestná analýza rozptylu)}
+
+$\mathbf{H}_0: \mu_1 = \mu_2 = \cdots = \mu_k$,\quad $\mathbf{H}_1$: alespoň dva průměry se liší.
+Test je vždy \textbf{pravostranný}: zamítáme $H_0$, pokud $F \ge F_{1-\alpha}(k-1, n-k)$.
+
+$F = \dfrac{S_m/(k-1)}{S_v/(n-k)} \sim F(k-1, n-k)$
+
+\begin{funkcedict}
+\texttt{aov(y \textasciitilde\ skupina)} &
+\begin{lstlisting}
+y <- c(91,81,74,57,
+       83,72,63,47,
+       71,69,58,40)
+skupina <- factor(rep(c("A","B","C"),
+                  each=4))
+m <- aov(y ~ skupina)
+summary(m)
+\end{lstlisting}
+& Automatická ANOVA s tabulkou výsledků. \\
+Skupinové průměry &
+\begin{lstlisting}
+tapply(y, skupina, mean)
+\end{lstlisting}
+& Průměry v každé skupině. \\
+Kritická hodnota F &
+\begin{lstlisting}
+k <- nlevels(skupina); n <- length(y)
+qf(0.95, df1 = k-1, df2 = n-k)
+\end{lstlisting}
+& Kvantil F-rozdělení pro $\alpha = 0{,}05$. \\
+\end{funkcedict}
+
+%%-----------------------------------------------------------------------------
+\subsection{Chí-kvadrát testy}
+
+\subsubsection*{Test dobré shody}
+
+$\mathbf{H}_0$: výběr odpovídá předpokládanému rozdělení.
+$G = \sum_j \dfrac{(n_j - e_j)^2}{e_j} \sim \chi^2(k-1)$, kde $e_j = n \cdot \pi_{0,j}$.
+
+\begin{funkcedict}
+\texttt{chisq.test(emp, p=p\_teor)} &
+\begin{lstlisting}
+emp <- c(A=82, B=38, AB=26, O=69)
+p0  <- c(A=0.41, B=0.14,
+         AB=0.07, O=0.38)
+chisq.test(emp, p = p0)
+\end{lstlisting}
+& Automatický test dobré shody. Vektor \texttt{p0} musí mít součet 1. \\
+Ručně &
+\begin{lstlisting}
+teor <- sum(emp) * p0
+G <- sum((emp - teor)^2 / teor)
+p_val <- 1 - pchisq(G, df=length(emp)-1)
+chi_kr <- qchisq(0.99, df=length(emp)-1)
+\end{lstlisting}
+& Ruční výpočet testové statistiky a p-hodnoty. \\
+\end{funkcedict}
+
+\subsubsection*{Test nezávislosti (kontingenční tabulka)}
+
+$\mathbf{H}_0$: řádkový a sloupcový znak jsou nezávislé.
+$e_{ij} = \dfrac{n_{i\bullet} n_{\bullet j}}{n}$,\quad $G \sim \chi^2\bigl((r-1)(s-1)\bigr)$.
+
+\begin{funkcedict}
+\texttt{chisq.test(tabulka)} &
+\begin{lstlisting}
+kt <- matrix(c(1768,807,189,47,
+               946,1387,746,53,
+               115,438,288,16),
+             nrow=3, byrow=TRUE)
+res <- chisq.test(kt)
+res$p.value    # p-hodnota
+res$expected   # teoreticke cetnosti
+\end{lstlisting}
+& Test nezávislosti z kontingenční tabulky. \\
+Craménovo V &
+\begin{lstlisting}
+G <- as.numeric(res$statistic)
+n_celk <- sum(kt)
+r <- nrow(kt); s_kt <- ncol(kt)
+V <- sqrt(G / (n_celk*(min(r,s_kt)-1)))
+\end{lstlisting}
+& Síla závislosti: $V \in [0,1]$. Pearsonův $C$ závisí na rozměrech tabulky. \\
 \end{funkcedict}
 
 \clearpage
