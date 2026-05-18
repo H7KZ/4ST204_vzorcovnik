@@ -1,0 +1,21 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+
+# Editor temp files
+*.swp
+*~
+.DS_Store
+Thumbs.db
