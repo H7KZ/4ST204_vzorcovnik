@@ -4402,4 +4402,47 @@ np.linalg.norm(x, ord=p)  # Lp
 
 \noindent\hrule\medskip
 
+\subsection{$L_\infty$ norma}
+
+$L_\infty$ norma je limitním případem $L_p$ normy pro $p \to \infty$.
+Výsledkem je největší absolutní hodnota ze složek vektoru.
+
+\begin{equation*}
+	L_\infty(\mathbf{x}) = \|\mathbf{x}\|_\infty = \lim_{p \to \infty} \left(\sum_{i=1}^{n} |x_i|^p\right)^{1/p} = \max_{i \in \{1,\ldots,n\}} |x_i|
+\end{equation*}
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\mathbf{x} = (x_1, x_2, \ldots, x_n)^T$ je vektor reálných čísel,
+	\item $\max$ označuje maximum přes všechny složky vektoru.
+\end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{norm(x, type="I")} &
+	\begin{lstlisting}
+x <- c(3, -4, 0, 2)
+norm(as.matrix(x), type="I")
+	\end{lstlisting}
+	&
+	Vrací $L_\infty$ normu vektoru (jako jednosloupcové matice): $\max_i |x_i|$. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{np.linalg.norm} &
+	\begin{lstlisting}
+import numpy as np
+x = np.array([3, -4, 0, 2])
+np.linalg.norm(x, ord=np.inf)
+	\end{lstlisting}
+	&
+	Vrací $L_\infty$ normu vektoru: $\max_i |x_i|$. \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
 \end{document}
