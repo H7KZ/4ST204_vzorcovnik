@@ -4480,4 +4480,51 @@ Přehled minimalizátorů $L_p$ normy distancí:
 
 \noindent\hrule\medskip
 
+\subsubsection{$L_0$ norma distancí --- modus}
+
+$L_0$ norma distancí je minimalizována modem (modusem) --- nejčastěji se
+vyskytující hodnotou v datech. Využívá se v klasifikačních úlohách strojového
+učení, kde minimalizuje mismatch rate.
+
+\begin{equation*}
+	L_0(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_0 = \lim_{p \to 0} \left(\sum_{i=1}^{n} |x_i - x^*|^p\right)^{1/p}
+\end{equation*}
+
+Norma je minimalizována pro $x^* = \hat{x}$, kde $\hat{x}$ je modus souboru.
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\hat{x}$ je modus (nejčastěji se vyskytující hodnota) souboru $\mathbf{x}$.
+\end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{which.max(table(x))} &
+	\begin{lstlisting}
+x <- c(1, 2, 2, 3, 2, 4)
+modus <- as.numeric(
+  names(which.max(table(x)))
+)
+	\end{lstlisting}
+	&
+	Vrací modus vektoru \texttt{x} (hodnotu s nejvyšší četností). \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{scipy.stats.mode} &
+	\begin{lstlisting}
+from scipy import stats
+x = [1, 2, 2, 3, 2, 4]
+modus = stats.mode(x).mode
+	\end{lstlisting}
+	&
+	Vrací modus pole \texttt{x}. \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
 \end{document}
