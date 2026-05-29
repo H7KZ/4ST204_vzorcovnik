@@ -4527,4 +4527,49 @@ modus = stats.mode(x).mode
 
 \noindent\hrule\medskip
 
+\subsubsection{$L_1$ norma distancí --- medián}
+
+$L_1$ norma distancí je minimalizována mediánem. Využívá se při hledání
+optimálního umístění bodu v prostoru (např.\ studna mezi záhony, poštovní
+centrála v bloku zástavby).
+
+\begin{equation*}
+	L_1(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_1 = \sum_{i=1}^{n} |x_i - x^*|
+\end{equation*}
+
+Norma je minimalizována pro $x^* = \tilde{x}$, kde $\tilde{x}$ je medián souboru.
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\tilde{x}$ je medián souboru $\mathbf{x}$.
+\end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{median(x)} &
+	\begin{lstlisting}
+x <- c(3, 1, 4, 1, 5, 9, 2, 6)
+median(x)
+	\end{lstlisting}
+	&
+	Vrací medián vektoru \texttt{x}. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{np.median} &
+	\begin{lstlisting}
+import numpy as np
+x = np.array([3, 1, 4, 1, 5, 9, 2, 6])
+np.median(x)
+	\end{lstlisting}
+	&
+	Vrací medián pole \texttt{x}. \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
 \end{document}
