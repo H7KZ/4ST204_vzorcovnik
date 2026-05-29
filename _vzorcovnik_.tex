@@ -4445,4 +4445,39 @@ np.linalg.norm(x, ord=np.inf)
 
 \noindent\hrule\medskip
 
+\subsection{$L_p$ norma distancí}
+
+$L_p$ norma distancí měří vzdálenost vektoru $\mathbf{x}$ od libovolné
+reálné hodnoty $x^*$. Volbou $p$ dostaneme různé míry polohy jako minimalizátory.
+
+\begin{equation*}
+	L_p(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_p = \left(\sum_{i=1}^{n} |x_i - x^*|^p\right)^{1/p}
+\end{equation*}
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\mathbf{x} = (x_1, x_2, \ldots, x_n)^T$ je vektor reálných čísel,
+	\item $x^*$ je libovolná reálná hodnota (kandidát na míru polohy),
+	\item $p \geq 0$ je řád normy.
+\end{itemize}
+
+Přehled minimalizátorů $L_p$ normy distancí:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{cl}
+	\toprule
+	$p$ & minimalizátor $L_p$ normy distancí \\
+	\midrule
+	$0$ & modus \\
+	$1$ & medián \\
+	$2$ & aritmetický průměr \\
+	$\infty$ & mid-range $= \frac{\max \mathbf{x} + \min \mathbf{x}}{2}$ \\
+	\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\hrule\medskip
+
 \end{document}
