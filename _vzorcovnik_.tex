@@ -4357,7 +4357,7 @@ kde
 
 \begin{itemize}[noitemsep]
 	\item $\mathbf{x} = (x_1, x_2, \ldots, x_n)^T$ je vektor reálných čísel,
-	\item $p \geq 0$ je reálné číslo (řád normy),
+	\item $p > 0$ je reálné číslo (řád normy),
 	\item $|x_i|$ je absolutní hodnota $i$-té složky vektoru,
 	\item $n$ je délka vektoru.
 \end{itemize}
@@ -4374,7 +4374,15 @@ norm(as.matrix(x), type="1")   # L1
 norm(as.matrix(x), type="2")   # L2
 	\end{lstlisting}
 	&
-	Vrací $L_p$ normu vektoru (jako jednosloupcové matice). Pro $p=1$: \texttt{type="1"}, pro $p=2$: \texttt{type="2"}. \\
+	Vrací $L_1$ nebo $L_2$ normu vektoru (jako jednosloupcové matice). \\
+	\texttt{sum(abs(x)\^{}p)\^{}(1/p)} &
+	\begin{lstlisting}
+p <- 3
+x <- c(3, -4, 0, 2)
+sum(abs(x)^p)^(1/p)
+	\end{lstlisting}
+	&
+	Vrací $L_p$ normu vektoru pro libovolné $p > 0$. \\
 \end{funkcedict}
 
 \paragraph{Implementace v Python}\mbox{}\par
