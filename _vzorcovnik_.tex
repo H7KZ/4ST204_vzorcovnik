@@ -2477,6 +2477,64 @@ f.rvs(dfn=3, dfd=10, size=100) # simulace
 \end{funkcedict}
 
 
+\subsection{Centrální limitní věty}
+
+Centrální limitní věty (CLV) říkají, že součet velkého počtu nezávislých
+náhodných veličin s konečnou střední hodnotou a rozptylem konverguje
+v rozdělení k normálnímu rozdělení -- bez ohledu na původní rozdělení sčítanců.
+
+\subsubsection{Moivreova-Laplaceova centrální limitní věta}
+
+Nejspecifičtější případ: sčítance jsou i.i.d. Bernoulliho veličiny.
+
+\begin{itemize}[noitemsep]
+    \item $X_1, \ldots, X_n$ jsou i.i.d., každá $\sim \mathrm{Bernoulli}(\pi)$
+    \item $X = \sum_{i=1}^{n} X_i \sim \mathrm{Binom}(n, \pi)$
+    \item $\mathbb{E}(X) = n\pi$, $\quad \mathrm{var}(X) = n\pi(1-\pi)$
+\end{itemize}
+
+Pak dle Moivreovy-Laplaceovy CLV platí:
+
+\begin{equation*}
+    U \equiv \frac{X - n\pi}{\sqrt{n\pi(1-\pi)}} \xrightarrow{d} \mathcal{N}(0,\,1^2)
+\end{equation*}
+
+Binomické rozdělení pro dostatečně velké $n$ konverguje k normálnímu.
+
+\subsubsection{Lindebergova-Lévyho centrální limitní věta}
+
+Obecnější případ: sčítance jsou i.i.d. s libovolným (stejným) rozdělením.
+
+\begin{itemize}[noitemsep]
+    \item $X_1, \ldots, X_n$ jsou i.i.d. se stejným rozdělením
+    \item $\mathbb{E}(X_i) = \mu < \infty$, $\quad \mathrm{var}(X_i) = \sigma^2 < \infty$
+    \item $X = \sum_{i=1}^{n} X_i$, tedy $\mathbb{E}(X) = n\mu$, $\quad \mathrm{var}(X) = n\sigma^2$
+\end{itemize}
+
+Pak dle Lindebergovy-Lévyho CLV platí:
+
+\begin{equation*}
+    U \equiv \frac{X - n\mu}{\sqrt{n\sigma^2}} \xrightarrow{d} \mathcal{N}(0,\,1^2)
+\end{equation*}
+
+\subsubsection{Ljapunova centrální limitní věta}
+
+Nejobecnější případ: sčítance nemusí pocházet ze stejného rozdělení.
+
+\begin{itemize}[noitemsep]
+    \item $X_1, \ldots, X_n$ jsou nezávislé (ne nutně stejně rozdělené)
+    \item $\mathbb{E}(X_i) < \infty$, $\quad \mathrm{var}(X_i) < \infty$ pro každé $i$
+    \item $X = \sum_{i=1}^{n} X_i$
+\end{itemize}
+
+Pak dle Ljapunovy CLV platí:
+
+\begin{equation*}
+    U \equiv \frac{X - \sum_{i=1}^{n}\mathbb{E}(X_i)}{\sqrt{\sum_{i=1}^{n}\mathrm{var}(X_i)}}
+    \xrightarrow{d} \mathcal{N}(0,\,1^2)
+\end{equation*}
+
+
 \clearpage
 \section{Testování hypotéz}
 
