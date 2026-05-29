@@ -4421,13 +4421,13 @@ kde
 \paragraph{Implementace v R}\mbox{}\par
 
 \begin{funkcedict}
-	\texttt{norm(x, type="I")} &
+	\texttt{max(abs(x))} &
 	\begin{lstlisting}
 x <- c(3, -4, 0, 2)
-norm(as.matrix(x), type="I")
+max(abs(x))
 	\end{lstlisting}
 	&
-	Vrací $L_\infty$ normu vektoru (jako jednosloupcové matice): $\max_i |x_i|$. \\
+	Vrací $L_\infty$ normu vektoru: $\max_i |x_i|$. \\
 \end{funkcedict}
 
 \paragraph{Implementace v Python}\mbox{}\par
