@@ -4616,4 +4616,54 @@ np.mean(x)
 
 \noindent\hrule\medskip
 
+\subsubsection{$L_\infty$ norma distancí --- mid-range}
+
+$L_\infty$ norma distancí je minimalizována mid-range --- průměrem minima
+a maxima souboru. Využívá se při umístění prvku v nepředvídatelném
+(stochastickém) systému, kde chceme minimalizovat největší možnou vzdálenost
+(např.\ umístění hasicího přístroje na chodbě, volba univerzální velikosti
+pracovního oděvu).
+
+\begin{equation*}
+	L_\infty(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_\infty = \max_{i \in \{1,\ldots,n\}} |x_i - x^*|
+\end{equation*}
+
+Norma je minimalizována pro
+
+\begin{equation*}
+	x^* = \frac{\max \mathbf{x} + \min \mathbf{x}}{2}
+\end{equation*}
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\max \mathbf{x}$ je největší hodnota souboru,
+	\item $\min \mathbf{x}$ je nejmenší hodnota souboru.
+\end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{(max(x)+min(x))/2} &
+	\begin{lstlisting}
+x <- c(3, 1, 4, 1, 5, 9, 2, 6)
+mid_range <- (max(x) + min(x)) / 2
+	\end{lstlisting}
+	&
+	Vrací mid-range vektoru \texttt{x}. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{(max+min)/2} &
+	\begin{lstlisting}
+import numpy as np
+x = np.array([3, 1, 4, 1, 5, 9, 2, 6])
+mid_range = (np.max(x) + np.min(x)) / 2
+	\end{lstlisting}
+	&
+	Vrací mid-range pole \texttt{x}. \\
+\end{funkcedict}
+
 \end{document}
