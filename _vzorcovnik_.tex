@@ -4572,4 +4572,48 @@ np.median(x)
 
 \noindent\hrule\medskip
 
+\subsubsection{$L_2$ norma distancí --- aritmetický průměr}
+
+$L_2$ norma distancí je minimalizována aritmetickým průměrem. Tvoří základ
+metody nejmenších čtverců (MNČ) v lineární regresi.
+
+\begin{equation*}
+	L_2(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_2 = \sqrt{\sum_{i=1}^{n} (x_i - x^*)^2}
+\end{equation*}
+
+Norma je minimalizována pro $x^* = \bar{x}$, kde $\bar{x}$ je aritmetický průměr souboru.
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\bar{x}$ je aritmetický průměr souboru $\mathbf{x}$.
+\end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{mean(x)} &
+	\begin{lstlisting}
+x <- c(3, 1, 4, 1, 5, 9, 2, 6)
+mean(x)
+	\end{lstlisting}
+	&
+	Vrací aritmetický průměr vektoru \texttt{x}. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{np.mean} &
+	\begin{lstlisting}
+import numpy as np
+x = np.array([3, 1, 4, 1, 5, 9, 2, 6])
+np.mean(x)
+	\end{lstlisting}
+	&
+	Vrací aritmetický průměr pole \texttt{x}. \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
 \end{document}
