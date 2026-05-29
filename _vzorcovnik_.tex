@@ -4487,7 +4487,7 @@ vyskytující hodnotou v datech. Využívá se v klasifikačních úlohách stro
 učení, kde minimalizuje mismatch rate.
 
 \begin{equation*}
-	L_0(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_0 = \lim_{p \to 0} \left(\sum_{i=1}^{n} |x_i - x^*|^p\right)^{1/p}
+	L_0(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_0 = \lim_{p \to 0^+} \sum_{i=1}^{n} |x_i - x^*|^p
 \end{equation*}
 
 Norma je minimalizována pro $x^* = \hat{x}$, kde $\hat{x}$ je modus souboru.
