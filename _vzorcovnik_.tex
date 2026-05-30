@@ -3243,7 +3243,7 @@ print(m2.rsquared_adj)
 	R^2_{ADJ} = 1 - (1-R^2)\frac{n-1}{n-p}
 \end{equation*}
 
-kde $S_Y = \sum(y_i-\bar{y})^2$ (celkový), $S_T = \sum(\hat{y}_i-\bar{y})^2$ (regresní), $S_R = \sum e_i^2$ (reziduální), $p$ = počet odhadovaných parametrů (pro jednoduchou regresi $p=2$).
+kde $S_Y = \sum(y_i-\bar{y})^2$ (celkový), $S_T = \sum(\hat{y}_i-\bar{y})^2$ (teoretický), $S_R = \sum(y_i - \hat{y}_i)^2$ (reziduální), $p$ = počet odhadovaných parametrů (pro jednoduchou regresi $p=2$).
 
 \paragraph{Implementace v R}\mbox{}\par
 
@@ -3515,6 +3515,10 @@ np.convolve(y, np.ones(m)/m, mode='valid')
 Pro sudé $m$: centrovaný KP = průměr dvou po sobě jdoucích prostých KP délky $m$.
 Používá se pro čtvrtletní nebo měsíční data.
 
+\begin{equation*}
+	\bar{y}_t = \frac{y_{t-p} + 2y_{t-p+1} + \cdots + 2y_t + \cdots + 2y_{t+p-1} + y_{t+p}}{2m}, \qquad m = 2p
+\end{equation*}
+
 \paragraph{Implementace v R}\mbox{}\par
 
 \begin{funkcedict}
@@ -3668,6 +3672,121 @@ model.predict(X_new)
 		
 \end{funkcedict}
 
+
+\subsection{Nelineární trendy časových řad}
+
+\subsubsection{Kvadratický (parabolický) trend}
+
+Model: $\hat{T}_t = b_0 + b_1 t + b_2 t^2$, kde $t = 1, 2, \ldots, n$ je časová proměnná.
+
+Znaménko $b_2$ určuje tvar paraboly: $b_2 > 0$ -- konvexní (tvar~U, minumum), $b_2 < 0$ -- konkávní (tvar~$\cap$, maximum).
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{Kvadratický trend} &
+	\begin{lstlisting}
+t <- 1:length(y)
+m <- lm(y ~ t + I(t^2))
+summary(m)       # b0, b1, b2, R^2
+fitted(m)        # vyrovnane hodnoty
+	\end{lstlisting}
+	&
+	Funkce \texttt{I(t\^{}2)} izoluje mocninu od vzorcové syntaxe. Koeficienty v \texttt{Estimate}: \texttt{(Intercept)} = $b_0$, \texttt{t} = $b_1$, \texttt{I(t\^{}2)} = $b_2$. \\
+
+	\texttt{Predikce} &
+	\begin{lstlisting}
+# Predikce pro t = 11 (rok 2018)
+predict(m, newdata = data.frame(t = 11))
+	\end{lstlisting}
+	&
+	Dosadí $t=11$ do odhadnutého modelu $\hat{T}_{11} = b_0 + b_1 \cdot 11 + b_2 \cdot 121$. \\
+
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{Kvadratický trend} &
+	\begin{lstlisting}
+import numpy as np
+import statsmodels.formula.api as smf
+t = np.arange(1, len(y) + 1)
+df['t'] = t
+df['t2'] = t**2
+m = smf.ols('y ~ t + t2', data=df).fit()
+print(m.summary())
+	\end{lstlisting}
+	& Kvadratický člen se přidá jako nový sloupec \texttt{t2}; \texttt{summary()} vrátí $b_0, b_1, b_2$ a $R^2$. \\
+
+\end{funkcedict}
+
+\subsubsection{Exponenciální trend}
+
+Vhodný tehdy, kdy časová řada roste (nebo klesá) relativně konstantním tempem.
+
+Model v logaritmické linearizaci:
+\begin{equation*}
+	y_t = b_0 \cdot b_1^t
+	\quad\Longrightarrow\quad
+	\ln y_t = \ln b_0 + t \cdot \ln b_1
+	\quad\Longrightarrow\quad
+	y^* = \beta_0^* + \beta_1^* t
+\end{equation*}
+
+kde $y^* = \ln y_t$, $\beta_0^* = \ln b_0$, $\beta_1^* = \ln b_1$.
+Zpětná transformace: $b_0 = e^{\beta_0^*}$, $b_1 = e^{\beta_1^*}$.
+Tempo růstu: $(b_1 - 1) \times 100\,\%$ za jednu časovou jednotku.
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{Exponenciální trend} &
+	\begin{lstlisting}
+t <- 1:length(y)
+m_exp <- lm(log(y) ~ t)
+summary(m_exp)   # beta0*, beta1*
+# Zpetna transformace
+b0 <- exp(coef(m_exp)[1])  # b0
+b1 <- exp(coef(m_exp)[2])  # b1
+	\end{lstlisting}
+	&
+	Regrese probíhá na $\ln y$; výsledné koeficienty je nutné zpětně transformovat pomocí $e^{(\cdot)}$. \\
+
+	\texttt{Predikce (orig. škála)} &
+	\begin{lstlisting}
+# Predikce pro t = 11
+y_hat_log <- predict(m_exp,
+  newdata = data.frame(t = 11))
+exp(y_hat_log)   # zpet na puvodni skalu
+	\end{lstlisting}
+	&
+	\texttt{predict} vrací hodnotu na logaritmické škále; \texttt{exp()} převede zpět na původní. \\
+
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{Exponenciální trend} &
+	\begin{lstlisting}
+import numpy as np
+import statsmodels.formula.api as smf
+df['log_y'] = np.log(df['y'])
+df['t'] = np.arange(1, len(df) + 1)
+m = smf.ols('log_y ~ t', data=df).fit()
+b0 = np.exp(m.params['Intercept'])
+b1 = np.exp(m.params['t'])
+# Predikce
+y_pred = np.exp(m.predict(df_new))
+	\end{lstlisting}
+	& Linearizace přes \texttt{log\_y}; zpětná transformace pomocí \texttt{np.exp()}. \\
+
+\end{funkcedict}
 
 \clearpage
 \section{Indexní analýza}
