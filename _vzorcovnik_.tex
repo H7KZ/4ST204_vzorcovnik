@@ -3526,12 +3526,12 @@ Používá se pro čtvrtletní nebo měsíční data.
 	\texttt{Centrovaný KP (sudé m)} &
 	\begin{lstlisting}
 m <- 4  # sude m -- centrovany KP
-kp_l <- filter(y, rep(1/m,m), sides=1)
-kp_c <- (kp_l +
-  c(NA, kp_l[-length(kp_l)])) / 2
+kp_c <- filter(y,
+  c(0.5, rep(1, m-1), 0.5)/m,
+  sides=2)
 	\end{lstlisting}
 	&
-	\texttt{sides=1}: průměr posledních $m$ hodnot. Centrovaný KP = průměr dvou sousedních prostých KP. \\
+	Váhy \texttt{c(0.5,\,1,\ldots,1,\,0.5)/m} odpovídají vzorci; \texttt{sides=2} = symetrické okno, výsledek je správně zarovnán na $t$. \\
 		
 \end{funkcedict}
 
@@ -3542,9 +3542,9 @@ kp_c <- (kp_l +
 	\texttt{Centrovaný KP} &
 	\begin{lstlisting}
 # Pro m=4 (ctvrtletni data)
-pd.Series(y).rolling(4).mean().rolling(2).mean().shift(-1)
+pd.Series(y).rolling(4).mean().rolling(2).mean().shift(-2)
 	\end{lstlisting}
-	& Skutečný centrovaný klouzavý průměr pro sudé $m$. Vyžaduje průměr přes $m$ období následovaný oknem délky 2 a posunem \texttt{shift(-1)}. \\
+	& Centrovaný klouzavý průměr pro sudé $m$. Po dvojím rolling průměru je výsledek posunut o $m/2 = 2$ pozice; \texttt{shift(-2)} správně zarovná hodnotu na čas $t$. \\
 		
 \end{funkcedict}
 
