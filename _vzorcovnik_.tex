@@ -3838,6 +3838,46 @@ Agregují individuální změny přes všechny druhy zboží.
 kde $\bar{p}$ je vážený průměr cen (\texttt{weighted.mean}),
 kde váhy jsou množství~$q$: v~období~0 jsou váhy $q_0$, v~období~1 jsou váhy~$q_1$.
 
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Individuální indexy} &
+	\begin{lstlisting}
+Ip <- p1 / p0
+Iq <- q1 / q0
+IQ <- (p1 * q1) / (p0 * q0)
+	\end{lstlisting}
+	& Individuální cenový, množstevní a výdajový index pro každé zboží. \\
+	\texttt{Složené individ. indexy} &
+	\begin{lstlisting}
+I_sum_q <- sum(q1) / sum(q0)
+I_sum_Q <- sum(p1*q1) / sum(p0*q0)
+I_p_bar <- weighted.mean(p1, q1) /
+           weighted.mean(p0, q0)
+	\end{lstlisting}
+	& Složené individuální indexy součtů množství, výdajů a průměrné ceny. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Individuální indexy} &
+	\begin{lstlisting}
+Ip = p1 / p0
+Iq = q1 / q0
+IQ = (p1 * q1) / (p0 * q0)
+	\end{lstlisting}
+	& Individuální cenový, množstevní a výdajový index pro každé zboží. \\
+	\texttt{Složené individ. indexy} &
+	\begin{lstlisting}
+I_sum_q = q1.sum() / q0.sum()
+I_sum_Q = (p1*q1).sum() / (p0*q0).sum()
+I_p_bar = (np.average(p1, weights=q1) /
+           np.average(p0, weights=q0))
+	\end{lstlisting}
+	& Složené individuální indexy součtů množství, výdajů a průměrné ceny. \\
+\end{funkcedict}
+
 \noindent\hrule\medskip
 
 
@@ -3874,6 +3914,40 @@ nebo v běžném období (\textbf{Paascheho}, superindex $P$).
 
 kde $p_0, p_1$ jsou ceny v základním a běžném období, $q_0, q_1$ jsou množství,
 $Q_0 = p_0 q_0$, $Q_1 = p_1 q_1$ jsou výdaje.
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Laspeyresovy indexy} &
+	\begin{lstlisting}
+IpL <- sum(p1 * q0) / sum(p0 * q0)
+IqL <- sum(p0 * q1) / sum(p0 * q0)
+	\end{lstlisting}
+	& Laspeyresův cenový a množstevní index (váhy z období~0). \\
+	\texttt{Paascheho indexy} &
+	\begin{lstlisting}
+IpP <- sum(p1 * q1) / sum(p0 * q1)
+IqP <- sum(p1 * q1) / sum(p1 * q0)
+	\end{lstlisting}
+	& Paascheho cenový a množstevní index (váhy z období~1). \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Laspeyresovy indexy} &
+	\begin{lstlisting}
+IpL = (p1 * q0).sum() / (p0 * q0).sum()
+IqL = (p0 * q1).sum() / (p0 * q0).sum()
+	\end{lstlisting}
+	& Laspeyresův cenový a množstevní index (váhy z období~0). \\
+	\texttt{Paascheho indexy} &
+	\begin{lstlisting}
+IpP = (p1 * q1).sum() / (p0 * q1).sum()
+IqP = (p1 * q1).sum() / (p1 * q0).sum()
+	\end{lstlisting}
+	& Paascheho cenový a množstevní index (váhy z období~1). \\
+\end{funkcedict}
 
 \noindent\hrule\medskip
 
