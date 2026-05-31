@@ -2482,6 +2482,35 @@ f.rvs(dfn=3, dfd=10, size=100) # simulace
 \clearpage
 \section{Testování hypotéz}
 
+\subsection{Chyby testování hypotéz}
+
+Rozhodnutí o zamítnutí $H_0$ může být správné nebo chybné.
+\textbf{Hladina významnosti} $\alpha = P(\text{chyba I. typu})$ se volí předem (typicky 0{,}05 nebo 0{,}01).
+
+\medskip
+{\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{p{0.22\textwidth} | p{0.30\textwidth} | p{0.30\textwidth}}
+	& \textbf{$H_0$ se nezamítá} & \textbf{$H_0$ se zamítá} \\
+	\hline
+	\textbf{$H_0$ je pravdivá}
+		& Správné rozhodnutí\newline$(1-\alpha)$
+		& \textbf{Chyba I.\,typu}\newline$(\alpha)$ \\
+	\hline
+	\textbf{$H_0$ není pravdivá}
+		& \textbf{Chyba II.\,typu}\newline$(\beta)$
+		& Správné rozhodnutí\newline$(1-\beta)$ = síla testu \\
+\end{tabular}}
+
+\medskip
+\begin{itemize}[noitemsep]
+	\item $\alpha$ \textbf{(chyba I.\,typu):} zamítneme $H_0$, přestože platí. Volíme sami jako hladinu významnosti.
+	\item $\beta$ \textbf{(chyba II.\,typu):} nezamítneme $H_0$, přestože neplatí. Závisí na velikosti výběru a síle efektu.
+	\item $1-\beta$ \textbf{(síla testu):} pravděpodobnost správného zamítnutí nepravdivé $H_0$.
+	\item Snížení $\alpha$ zpravidla zvyšuje $\beta$ (při stejném $n$).
+\end{itemize}
+
+\noindent\hrule\medskip
+
 \subsection{Bodový odhad}
 
 Bodový odhad nahrazuje neznámý parametr populace jednou hodnotou
