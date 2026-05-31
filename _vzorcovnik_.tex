@@ -3060,7 +3060,18 @@ Pro tabulku $2 \times 2$:
 	G = \frac{n\,(n_{11}n_{22} - n_{12}n_{21})^2}{n_{1.}\, n_{2.}\, n_{.1}\, n_{.2}}
 \end{equation*}
 
-Síla závislosti: Pearsonovo $C = \sqrt{\dfrac{G}{n+G}}$;\quad Cramérovo $V = \sqrt{\dfrac{G}{n\,(\min(r,s)-1)}} \in [0,1]$, kde $m = \min(r,s)$. \\
+Síla závislosti ($m = \min(r,s)$):
+
+\begin{equation*}
+	C = \sqrt{\frac{G}{G + n}} \in \left[0,\, \sqrt{\frac{m-1}{m}}\right)
+	\qquad
+	V = \sqrt{\frac{G}{n\,(m-1)}} \in [0, 1]
+\end{equation*}
+
+\noindent\textbf{Pearsonovo $C$} nikdy nedosáhne hodnoty 1 -- ve jmenovateli je vždy $G+n > G$,
+takže zlomek je přísně menší než 1. Maximum závisí na rozměrech tabulky.
+\textbf{Cramérovo $V$} je upraveno tak, aby při dokonalé závislosti dosahovalo 1, a je proto vhodné pro porovnání tabulek různých rozměrů.
+
 Interpretace $V$: $< 0{,}1$ zanedbatelná $\cdot$ $0{,}1$--$0{,}3$ slabá $\cdot$ $0{,}3$--$0{,}5$ středně silná $\cdot$ $> 0{,}5$ silná.
 
 \paragraph{Implementace v R}\mbox{}\par
@@ -3222,6 +3233,61 @@ n    = len(x)
 T    = r * np.sqrt((n-2)/(1-r**2))
 	\end{lstlisting}
 	& Ruční výpočet přes kovarianci; \texttt{np.cov} vrací kovarianční matici, \texttt{[0,1]} vybere $s_{xy}$. \\
+
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
+\subsubsection{Koeficient determinace $R^2$}
+
+Udává, jaký podíl variability $Y$ je vysvětlen lineární závislostí na $X$.
+Pro jednoduchou lineární regresi platí $R^2 = r^2$ (čtverec Pearsonova korelačního koeficientu).
+
+\begin{equation*}
+	R^2 = r^2 \in [0, 1]
+\end{equation*}
+
+\noindent Příklad: $r = 0{,}9 \Rightarrow R^2 = 0{,}81$ -- model vysvětluje 81~\% variability $Y$.
+Záporná korelace dává stejný $R^2$: $r = -0{,}9 \Rightarrow R^2 = 0{,}81$.
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{$R^2$ z korelace} &
+	\begin{lstlisting}
+R2 <- cor(x, y)^2
+	\end{lstlisting}
+	& Koeficient determinace jako čtverec Pearsonova $r$. \\
+
+	\texttt{$R^2$ z regresního modelu} &
+	\begin{lstlisting}
+m  <- lm(y ~ x)
+R2 <- summary(m)$r.squared
+	\end{lstlisting}
+	& \texttt{summary(lm())} vrací $R^2$ přímo (\texttt{r.squared}). \\
+
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{$R^2$ z korelace} &
+	\begin{lstlisting}
+from scipy.stats import pearsonr
+r, _ = pearsonr(x, y)
+R2 = r**2
+	\end{lstlisting}
+	& Koeficient determinace jako čtverec Pearsonova $r$. \\
+
+	\texttt{$R^2$ z regresního modelu} &
+	\begin{lstlisting}
+from scipy.stats import linregress
+res = linregress(x, y)
+R2  = res.rvalue**2
+	\end{lstlisting}
+	& \texttt{rvalue} je Pearsonovo $r$; jeho čtverec je $R^2$. \\
 
 \end{funkcedict}
 
