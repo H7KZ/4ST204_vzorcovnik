@@ -3951,6 +3951,42 @@ IqP = (p1 * q1).sum() / (p1 * q0).sum()
 
 \noindent\hrule\medskip
 
+
+\subsection{Fisherův (ideální) index}
+
+Fisherův index je geometrický průměr Laspeyresova a Paascheho indexu.
+Platí $Ip^{(F)} \cdot Iq^{(F)} = I(\Sigma Q)$ (faktorový rozklad).
+
+\begin{equation*}
+	Ip^{(F)} = \sqrt{Ip^{(L)} \cdot Ip^{(P)}},
+	\qquad
+	Iq^{(F)} = \sqrt{Iq^{(L)} \cdot Iq^{(P)}}
+\end{equation*}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Fisherův index} &
+	\begin{lstlisting}
+IpF <- sqrt(IpL * IpP)
+IqF <- sqrt(IqL * IqP)
+	\end{lstlisting}
+	& Geometrický průměr Laspeyresova a Paascheho indexu. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Fisherův index} &
+	\begin{lstlisting}
+IpF = np.sqrt(IpL * IpP)
+IqF = np.sqrt(IqL * IqP)
+	\end{lstlisting}
+	& Geometrický průměr Laspeyresova a Paascheho indexu. \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
 \clearpage
 \section{Příloha: Utility funkce v Pythonu}
 
