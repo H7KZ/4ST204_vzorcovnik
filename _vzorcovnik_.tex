@@ -2919,6 +2919,13 @@ Test je vždy \textbf{pravostranný}: zamítáme $H_0$, pokud $F \ge F_{1-\alpha
 	S_v = \sum_{j=1}^k \sum_{i=1}^{n_j} (x_{ij} - \bar{x}_j)^2
 \end{equation*}
 
+\textbf{Poměr determinace} $\eta^2$ udává podíl variability vysvětlené skupinovým faktorem
+($S_c = S_m + S_v$ je celkový součet čtverců):
+
+\begin{equation*}
+	\eta^2 = \frac{S_m}{S_c} = \frac{S_m}{S_m + S_v} \in [0, 1]
+\end{equation*}
+
 \paragraph{Implementace v R}\mbox{}\par
 
 \begin{funkcedict}
@@ -2958,22 +2965,37 @@ SS_m <- sum(tapply(y,skupina,
 SS_v <- sum(tapply(y,skupina,
   function(g) sum((g-mean(g))^2)))
 F_stat <- (SS_m/(k-1))/(SS_v/(n-k))
+eta2  <- SS_m / (SS_m + SS_v)
 	\end{lstlisting}
 	&
-	Ruční výpočet součtů čtverců mezi skupinami a uvnitř skupin. \\
-		
+	Ruční výpočet součtů čtverců; $\eta^2 = S_m / S_c$ je poměr determinace. \\
+
 \end{funkcedict}
 
 \paragraph{Implementace v Python}\mbox{}\par
 
 \begin{funkcedict}
-		
+
 	\texttt{stats.f\_oneway(A, B, C)} &
 	\begin{lstlisting}
 stats.f_oneway(A, B, C)
 	\end{lstlisting}
 	& Testování shody průměrů u tří a více skupin. \\
-		
+
+	\texttt{Poměr determinace $\eta^2$} &
+	\begin{lstlisting}
+import numpy as np
+groups = [A, B, C]
+y_all = np.concatenate(groups)
+grand = y_all.mean()
+SS_m = sum(len(g)*(g.mean()-grand)**2
+           for g in groups)
+SS_v = sum(((g - g.mean())**2).sum()
+           for g in groups)
+eta2 = SS_m / (SS_m + SS_v)
+	\end{lstlisting}
+	& Poměr determinace $\eta^2 = S_m / S_c$; hodnota 0--1, jak velkou část variability vysvětluje faktor skupiny. \\
+
 \end{funkcedict}
 
 
