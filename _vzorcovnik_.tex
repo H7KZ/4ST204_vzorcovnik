@@ -3580,6 +3580,35 @@ fitted(m)   # vyrovnane hodnoty
 
 \paragraph{Implementace v Python}\mbox{}\par
 
+\begin{funkcedict}
+
+	\texttt{Dummy proměnné} &
+	\begin{lstlisting}
+t = np.arange(1, len(y) + 1)
+Q2 = (t % 4 == 2).astype(int)
+Q3 = (t % 4 == 3).astype(int)
+Q4 = (t % 4 == 0).astype(int)
+# Q1 je referencni (t % 4 == 1)
+	\end{lstlisting}
+	&
+	Vždy o jednu méně dummy než sezón -- jinak hrozí multikolinearita. \\
+
+	\texttt{LinearRegression()} s trendem a sezónností &
+	\begin{lstlisting}
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+X = np.column_stack([t, Q2, Q3, Q4])
+m = LinearRegression().fit(X, y)
+print(m.intercept_)   # beta_0
+print(m.coef_)        # beta_1, gamma_2,3,4
+fitted = m.predict(X) # vyrovnane hodnoty
+	\end{lstlisting}
+	&
+	Odhaduje lineární trend a sezónní odchylky; $\hat{\gamma}_j$ = odchylka $j$-tého čtvrtletí od referenčního. \\
+
+\end{funkcedict}
+
 \subsubsection{Dekompozice časové řady}
 
 Rozklad časové řady na trend $T_t$, sezónní $S_t$, cyklickou $C_t$ a reziduální složku $\varepsilon_t$:
