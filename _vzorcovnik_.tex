@@ -3409,10 +3409,18 @@ print(m2.rsquared_adj)
 
 kde $S_Y = \sum(y_i-\bar{y})^2$ (celkový), $S_T = \sum(\hat{y}_i-\bar{y})^2$ (teoretický), $S_R = \sum(y_i - \hat{y}_i)^2$ (reziduální), $p$ = počet odhadovaných parametrů (pro jednoduchou regresi $p=2$).
 
+\begin{equation*}
+	\mathrm{MSE} = \frac{S_R}{n} = \frac{\sum(y_i-\hat{y}_i)^2}{n},
+	\qquad
+	\mathrm{RMSE} = \sqrt{\mathrm{MSE}}
+\end{equation*}
+
+\noindent MSE (střední čtvercová chyba) měří průměrnou kvadratickou odchylku předpovědi; RMSE je ve stejných jednotkách jako $Y$.
+
 \paragraph{Implementace v R}\mbox{}\par
 
 \begin{funkcedict}
-		
+
 	\texttt{Součty čtverců a $R^2$} &
 	\begin{lstlisting}
 SS_tot <- sum((y - mean(y))^2)
@@ -3423,19 +3431,35 @@ summary(m)$r.squared  # zkratka
 	\end{lstlisting}
 	&
 	$S_Y = S_T + S_R$; $R^2 = S_T/S_Y$ -- podíl rozptylu $Y$ vysvětlený modelem. \\
-		
+
+	\texttt{MSE a RMSE} &
+	\begin{lstlisting}
+MSE  <- mean(residuals(m)^2)
+RMSE <- sqrt(MSE)
+	\end{lstlisting}
+	& \texttt{residuals(m)} vrací $e_i = y_i - \hat{y}_i$; průměr jejich čtverců je MSE. \\
+
 \end{funkcedict}
 
 \paragraph{Implementace v Python}\mbox{}\par
 
 \begin{funkcedict}
-		
-	\texttt{r\_squared} &
+
+	\texttt{$R^2$} &
 	\begin{lstlisting}
 r_squared = res.rvalue**2
 	\end{lstlisting}
 	& $R^2$ jako čtverec korelačního koeficientu (z \texttt{stats.linregress}). \\
-		
+
+	\texttt{MSE a RMSE} &
+	\begin{lstlisting}
+import numpy as np
+e    = y - res.intercept - res.slope*x
+MSE  = np.mean(e**2)
+RMSE = np.sqrt(MSE)
+	\end{lstlisting}
+	& Rezidua ručně z parametrů \texttt{linregress}; nebo \texttt{sklearn.metrics.mean\_squared\_error(y, y\_hat)}. \\
+
 \end{funkcedict}
 
 \noindent\hrule\medskip
