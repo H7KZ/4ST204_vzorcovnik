@@ -3940,13 +3940,13 @@ Sestavíme \texttt{data.frame} s $t$ a dummy proměnnými pro každé nové pozo
 t_n <- 21:24
 nd <- data.frame(
   t  = t_n,
+  Q1 = as.integer(t_n %% 4 == 1),
   Q2 = as.integer(t_n %% 4 == 2),
-  Q3 = as.integer(t_n %% 4 == 3),
-  Q4 = as.integer(t_n %% 4 == 0))
+  Q3 = as.integer(t_n %% 4 == 3))
 predict(m, newdata = nd)
 	\end{lstlisting}
 	&
-	Predikce na budoucí kvartály. \\
+	Predikce na budoucí kvartály; názvy sloupců musí odpovídat proměnným v modelu. \\
 		
 \end{funkcedict}
 
@@ -3954,11 +3954,17 @@ predict(m, newdata = nd)
 
 \begin{funkcedict}
 		
-	\texttt{model.predict(\allowbreak X\_new)} &
+	\texttt{smf predikce} &
 	\begin{lstlisting}
-model.predict(X_new)
+t_n = np.arange(21, 25)
+nd  = pd.DataFrame({
+  't':  t_n,
+  'Q1': (t_n % 4 == 1).astype(int),
+  'Q2': (t_n % 4 == 2).astype(int),
+  'Q3': (t_n % 4 == 3).astype(int)})
+m.predict(nd)
 	\end{lstlisting}
-	& Predikce na nová data (scikit-learn nebo statsmodels). \\
+	& Predikce na budoucí kvartály; názvy sloupců musí odpovídat proměnným v modelu. \\
 		
 \end{funkcedict}
 
