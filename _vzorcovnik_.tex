@@ -3581,9 +3581,15 @@ y[1:] / y[:-1]
 
 \noindent\hrule\medskip
 
-\subsubsection{Chronologický průměr}
+\subsubsection{Průměr časové řady}
 
-Pro okamžikovou časovou řadu (stejně dlouhé intervaly -- nevážený):
+\noindent\textbf{Intervalová časová řada} -- prostý průměr:
+
+\begin{equation*}
+	\bar{y} = \frac{1}{n}\sum_{t=1}^{n} y_t
+\end{equation*}
+
+\noindent\textbf{Okamžiková časová řada} -- chronologický průměr (stejně dlouhé intervaly):
 
 \begin{equation*}
 	\bar{y} = \frac{\tfrac{1}{2}y_1 + y_2 + \dots + y_{n-1} + \tfrac{1}{2}y_n}{n-1}
@@ -3598,42 +3604,63 @@ Pro nestejně dlouhé intervaly (vážený chronologický průměr, délky inter
 \paragraph{Implementace v R}\mbox{}\par
 
 \begin{funkcedict}
-		
-	\texttt{Chronologický průměr} &
+
+	\texttt{Prostý průměr (intervalová)} &
+	\begin{lstlisting}
+mean(y)
+	\end{lstlisting}
+	& Průměr intervalové časové řady. \\
+
+	\texttt{Chronologický průměr (okamžiková)} &
 	\begin{lstlisting}
 n <- length(y)
 (y[1]/2 + sum(y[2:(n-1)]) +
   y[n]/2) / (n-1)
 	\end{lstlisting}
-	&
-	Průměr okamžikové časové řady; krajní hodnoty mají váhu $\tfrac{1}{2}$. \\
-		
+	& Průměr okamžikové časové řady; krajní hodnoty mají váhu $\tfrac{1}{2}$. \\
+
 \end{funkcedict}
 
 \paragraph{Implementace v Python}\mbox{}\par
 
 \begin{funkcedict}
-		
-	\texttt{Chronologický průměr} &
+
+	\texttt{Prostý průměr (intervalová)} &
+	\begin{lstlisting}
+np.mean(y)
+	\end{lstlisting}
+	& Průměr intervalové časové řady. \\
+
+	\texttt{Chronologický průměr (okamžiková)} &
 	\begin{lstlisting}
 (y[0]/2 + np.sum(y[1:-1]) + y[-1]/2) / (len(y)-1)
 	\end{lstlisting}
 	& Průměr okamžikové časové řady. \\
-		
+
 \end{funkcedict}
 
 
 \subsection{Řetězové a bazické indexy}
 
-\textbf{Řetězový index} (mezičasový): poměr k předchozímu období.
-\textbf{Bazický index}: poměr k základnímu období (období 1).
+\textbf{Řetězový index} $I_{t/t-1}$ (= \textbf{koeficient růstu} $k_t$): poměr k \emph{předchozímu} období.
+\textbf{Bazický index} $I_{t/1}$: poměr k \emph{základnímu} období (období 1).
+Oba výpočty jsou totožné -- liší se pouze volbou základu srovnání.
 
-\begin{align*}
-	k_t = I_{t/t-1} &= \frac{y_t}{y_{t-1}}
-	  & \bar{k}   & = \sqrt[n-1]{k_2 k_3 \cdots k_n} = \sqrt[n-1]{\frac{y_n}{y_1}} \\[4pt]
-	I_{t/1} &= I_{2/1} \cdot I_{3/2} \cdots I_{t/t-1}
-	  & I_{k/t-1} & = \frac{y_t}{y_{t-1}} = \frac{I_{t/1}}{I_{(t-1)/1}}            
-\end{align*}
+\medskip
+\noindent\textbf{Řetězový index / koeficient růstu:}
+\begin{equation*}
+	k_t = I_{t/t-1} = \frac{y_t}{y_{t-1}}
+	\qquad
+	\bar{k} = \sqrt[n-1]{k_2 \cdot k_3 \cdots k_n} = \sqrt[n-1]{\frac{y_n}{y_1}}
+	\quad \text{(průměrné tempo růstu)}
+\end{equation*}
+
+\noindent\textbf{Bazický index} (rozklad přes řetězové indexy a zpětný přepočet):
+\begin{equation*}
+	I_{t/1} = I_{2/1} \cdot I_{3/2} \cdots I_{t/t-1}
+	\qquad
+	I_{t/t-1} = \frac{y_t}{y_{t-1}} = \frac{I_{t/1}}{I_{(t-1)/1}}
+\end{equation*}
 
 \noindent\hrule\medskip
 
