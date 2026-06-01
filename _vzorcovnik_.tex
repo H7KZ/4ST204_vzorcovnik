@@ -3774,61 +3774,101 @@ kp_c = np.convolve(y, w[::-1], mode='valid')
 \subsubsection{Dummy proměnné a model}
 
 Model: $y_t = \beta_0 + \beta_1 t + \gamma_1 D_1 + \gamma_2 D_2 + \gamma_3 D_3 + \varepsilon_t$
-(sezónnost délky 4; $D_j$ jsou dummy proměnné; 4.\ čtvrtletí je referenční kategorie).
+(sezónnost délky 4; $D_j$ jsou dummy proměnné; \textbf{4.\ čtvrtletí je referenční kategorie}).
+
+\medskip
+\noindent$\hat\beta_0$ = hodnota trendu pro Q4 při $t=0$;
+$\hat\gamma_j$ = odchylka $j$-tého čtvrtletí od Q4.
+Sezónní složky se po odhadu centrují:
+
+\begin{equation*}
+	\hat{s} = \frac{\hat\gamma_1 + \hat\gamma_2 + \hat\gamma_3 + 0}{4},
+	\qquad
+	S_j = \hat\gamma_j - \hat{s}\;(j=1,2,3),
+	\quad
+	S_4 = -\hat{s},
+	\quad
+	\hat{T}_t = (\hat\beta_0 + \hat{s}) + \hat\beta_1 t
+\end{equation*}
 
 \paragraph{Implementace v R}\mbox{}\par
 
 \begin{funkcedict}
-		
-	\texttt{Dummy proměnné} &
+
+	\texttt{Dummy proměnné (Q4 = reference)} &
 	\begin{lstlisting}
-t <- 1:length(y)
+t  <- 1:length(y)
+Q1 <- as.integer(t %% 4 == 1)
 Q2 <- as.integer(t %% 4 == 2)
 Q3 <- as.integer(t %% 4 == 3)
-Q4 <- as.integer(t %% 4 == 0)
-# Q1 je referencni (t %% 4 == 1)
+# Q4 je referencni (t %% 4 == 0)
+m  <- lm(y ~ t + Q1 + Q2 + Q3)
+summary(m); fitted(m)
 	\end{lstlisting}
-	&
-	Vždy o jednu méně dummy než sezón -- jinak hrozí multikolinearita. \\
-		
-	\texttt{lm() s trendem a sezónností} &
+	& Dle metodiky přednášky 11. $\hat\gamma_j$ = odchylka od Q4. \\
+
+	\texttt{Přepočet sezónních složek} &
 	\begin{lstlisting}
-m <- lm(y ~ t + Q2 + Q3 + Q4)
-summary(m)
-fitted(m)   # vyrovnane hodnoty
+g     <- coef(m)[c("Q1","Q2","Q3")]
+s_hat <- sum(g) / 4   # prumer vcetne Q4=0
+S     <- g - s_hat    # S1, S2, S3
+S4    <- -s_hat
+b0_T  <- coef(m)["(Intercept)"] + s_hat
 	\end{lstlisting}
-	&
-	Odhaduje lineární trend a sezónní odchylky; $\hat{\gamma}_j$ = odchylka $j$-tého čtvrtletí od referenčního. \\
-		
+	& Centrování: $\sum S_j = 0$; opravený intercept \texttt{b0\_T} = hodnota trendu pro průměrné čtvrtletí. \\
+
+\end{funkcedict}
+
+\medskip
+\noindent\textbf{Alternativa -- centrovaný přístup (\texttt{contr.sum}):}
+
+\begin{funkcedict}
+
+	\texttt{contr.sum (R)} &
+	\begin{lstlisting}
+kvartal <- as.factor(
+  rep(1:4, length(y)/4))
+contrasts(kvartal) <- contr.sum(4)
+m2 <- lm(y ~ t + kvartal)
+summary(m2)
+# Intercept = prumerne ctvrtleti
+# kvartal1..3 = S1..S3 primo
+# S4 = -(kvartal1+kvartal2+kvartal3)
+	\end{lstlisting}
+	& Intercept = hodnota trendu pro průměrné čtvrtletí; $\sum S_j = 0$; sezónní složky jsou přímo ve výstupu bez ručního přepočtu. \\
+
 \end{funkcedict}
 
 \paragraph{Implementace v Python}\mbox{}\par
 
 \begin{funkcedict}
 
-	\texttt{Dummy proměnné} &
+	\texttt{smf.ols (Q4 = reference)} &
 	\begin{lstlisting}
-import numpy as np
-t = np.arange(1, len(y)+1)
+import numpy as np, pandas as pd
+import statsmodels.formula.api as smf
+t  = np.arange(1, len(y)+1)
+Q1 = (t % 4 == 1).astype(int)
 Q2 = (t % 4 == 2).astype(int)
 Q3 = (t % 4 == 3).astype(int)
-Q4 = (t % 4 == 0).astype(int)
-# Q1 je referencni (t % 4 == 1)
-	\end{lstlisting}
-	& Vždy o jednu méně dummy než sezón -- jinak hrozí multikolinearita. \\
-
-	\texttt{smf.ols() s trendem a sezónností} &
-	\begin{lstlisting}
-import pandas as pd
-import statsmodels.formula.api as smf
 df = pd.DataFrame(
-  {'y':y,'t':t,'Q2':Q2,'Q3':Q3,'Q4':Q4})
-m = smf.ols('y ~ t + Q2 + Q3 + Q4',
-            data=df).fit()
+  {'y':y,'t':t,'Q1':Q1,'Q2':Q2,'Q3':Q3})
+m  = smf.ols('y ~ t + Q1 + Q2 + Q3',
+             data=df).fit()
 print(m.summary())
-m.fittedvalues  # vyrovnane hodnoty
 	\end{lstlisting}
-	& Odhaduje lineární trend a sezónní odchylky; $\hat{\gamma}_j$ = odchylka $j$-tého čtvrtletí od referenčního. \\
+	& Dle metodiky přednášky 11. $\hat\gamma_j$ = odchylka od Q4. \\
+
+	\texttt{contr.sum (Python)} &
+	\begin{lstlisting}
+df['kvartal'] = pd.Categorical(
+  list(range(1,5))*(len(y)//4))
+m2 = smf.ols(
+  'y ~ t + C(kvartal, Sum)',
+  data=df).fit()
+print(m2.summary())
+	\end{lstlisting}
+	& Ekvivalent \texttt{contr.sum}; intercept = průměrné čtvrtletí. \\
 
 \end{funkcedict}
 
