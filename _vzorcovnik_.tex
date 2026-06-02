@@ -3241,6 +3241,14 @@ Měří sílu \textbf{lineární} závislosti dvou spojitých proměnných.
 	r = \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^n (x_i - \bar{x})^2 \cdot \sum_{i=1}^n (y_i - \bar{y})^2}}, \quad r \in [-1, 1]
 \end{equation*}
 
+\textbf{Výpočetní tvar} (vhodný pro ruční výpočet z tabulky průměrů):
+
+\begin{equation*}
+	r_{yx} = \frac{\overline{xy} - \bar{x}\cdot\bar{y}}{\sqrt{\bigl(\overline{x^2} - \bar{x}^2\bigr)\bigl(\overline{y^2} - \bar{y}^2\bigr)}}
+\end{equation*}
+
+kde $\overline{xy} = \tfrac{1}{n}\sum x_i y_i$,\; $\overline{x^2} = \tfrac{1}{n}\sum x_i^2$,\; $\overline{y^2} = \tfrac{1}{n}\sum y_i^2$.
+
 Test $H_0\colon \rho = 0$: $T = r\sqrt{(n-2)/(1-r^2)} \sim t(n-2)$. \\
 Interpretace $|r|$: $< 0{,}3$ slabá $\cdot$ $0{,}3$--$0{,}7$ střední $\cdot$ $> 0{,}7$ silná závislost. Znaménko udává směr.
 
@@ -3389,7 +3397,7 @@ print(m2.rsquared_adj)
 \end{funkcedict}
 \noindent\hrule\medskip
 
-\subsubsection{Součty čtverců a koeficient determinace $R^2$}
+\subsubsection{Index determinace $R^2$ a index korelace $I_{yx}$}
 
 \begin{equation*}
 	S_Y = S_T + S_R, \qquad R^2 = \frac{S_T}{S_Y} \in [0,1], \qquad
@@ -3397,6 +3405,17 @@ print(m2.rsquared_adj)
 \end{equation*}
 
 kde $S_Y = \sum(y_i-\bar{y})^2$ (celkový), $S_T = \sum(\hat{y}_i-\bar{y})^2$ (regresní), $S_R = \sum e_i^2$ (reziduální), $p$ = počet odhadovaných parametrů (pro jednoduchou regresi $p=2$).
+
+\textbf{Interpretace $R^2$:} podíl rozptylu $Y$ vysvětlený modelem. $R^2 = 0{,}8$ znamená, že model vysvětluje 80\,\% variability $Y$.
+
+\medskip
+\textbf{Index korelace} je odmocnina z $R^2$ a vyjadřuje těsnost závislosti na stupnici $[0,1]$:
+
+\begin{equation*}
+	I_{yx} = \sqrt{R^2} = \sqrt{\frac{S_T}{S_Y}}
+\end{equation*}
+
+Pro \textbf{jednoduchou lineární regresi} platí $I_{yx} = |r_{yx}|$, tedy index korelace se rovná absolutní hodnotě Pearsonova korelačního koeficientu.
 
 \paragraph{Implementace v R}\mbox{}\par
 
