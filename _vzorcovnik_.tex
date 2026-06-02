@@ -1240,18 +1240,18 @@ sd(x) / mean(x)
 
 \begin{funkcedict}
 		
-	\texttt{np.std(x) / np.mean(x)} &
+	\texttt{np.std(x, ddof=1) / np.mean(x)} &
 	\begin{lstlisting}
 import numpy as np
 
 x = np.array([2,4,6,8])
 
-np.std(x) / np.mean(x)
+np.std(x, ddof=1) / np.mean(x)
 	\end{lstlisting}
 	&
-	Vrací variační koeficient hodnot ve vektoru \texttt{x}.
+	Vrací variační koeficient hodnot ve vektoru \texttt{x}. \texttt{ddof=1} odpovídá výběrové SD (dělí $n-1$), stejně jako \texttt{sd()} v~R.
 	\\
-		
+
 \end{funkcedict}
 
 \noindent\hrule\medskip
@@ -1924,12 +1924,81 @@ Mějme množinu $n$ prvků, ze které vybíráme $k$ prvků.
 \end{itemize}
 
 \subsection{$L^p$ Normy (Vzdálenosti a penalizace)}
-Obecně: $\|x\|_p = \left( \sum |x_i|^p \right)^{1/p}$. Klíčové pro metriky chyb a regularizaci.
+
+$L_p$ norma vektoru reálných čísel poskytuje jednotící rámec pro míry polohy
+a variability. Klíčové pro metriky chyb a regularizaci.
+
+\begin{equation*}
+	L_p(\mathbf{x}) = \|\mathbf{x}\|_p = \left(\sum_{i=1}^{n} |x_i|^p\right)^{1/p}, \quad p > 0
+\end{equation*}
+
+kde
+
 \begin{itemize}[noitemsep]
-	\item \textbf{$L^1$ (Manhattan):} $\|x\|_1 = \sum |x_i|$. Využití: Lasso regrese.
-	\item \textbf{$L^2$ (Euklid):} $\|x\|_2 = \sqrt{\sum x_i^2}$. Využití: Ridge regrese (metoda nejmenších čtverců).
-	\item \textbf{$L^\infty$ (Max):} $\|x\|_\infty = \max(|x_i|)$. Reprezentuje nejhorší možnou chybu.
+	\item $\mathbf{x} = (x_1, x_2, \ldots, x_n)^T$ je vektor reálných čísel,
+	\item $p > 0$ je reálné číslo (řád normy),
+	\item $|x_i|$ je absolutní hodnota $i$-té složky vektoru.
 \end{itemize}
+
+Speciálně pro $p = 0$ uvažujeme $0^0 = 0$, takže $\|\mathbf{x}\|_0$ počítá počet nenulových složek.
+
+\subsubsection{$L_\infty$ norma}
+
+$L_\infty$ norma je limitním případem pro $p \to \infty$ --- výsledkem je největší absolutní hodnota ze složek vektoru.
+
+\begin{equation*}
+	\|\mathbf{x}\|_\infty = \lim_{p \to \infty} \left(\sum_{i=1}^{n} |x_i|^p\right)^{1/p} = \max_{i \in \{1,\ldots,n\}} |x_i|
+\end{equation*}
+
+\subsubsection{$L_p$ norma distancí}
+
+$L_p$ norma distancí měří vzdálenost vektoru $\mathbf{x}$ od hodnoty $x^*$.
+Volbou $p$ dostaneme různé míry polohy jako minimalizátory.
+
+\begin{equation*}
+	L_p(\mathbf{x}, x^*) = \left(\sum_{i=1}^{n} |x_i - x^*|^p\right)^{1/p}
+\end{equation*}
+
+Přehled minimalizátorů:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{cll}
+	\toprule
+	$p$ & minimalizátor & využití \\
+	\midrule
+	$0$ & modus & klasifikace (minimalizuje mismatch rate) \\
+	$1$ & medián & optimální umístění bodu (Manhattan vzdálenost), Lasso \\
+	$2$ & aritmetický průměr & metoda nejmenších čtverců, Ridge regrese \\
+	$\infty$ & mid-range $= \tfrac{\max \mathbf{x} + \min \mathbf{x}}{2}$ & minimalizace největší chyby \\
+	\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{$L_0$ — modus}\mbox{}\par
+\begin{equation*}
+	L_0(\mathbf{x}, x^*) = \lim_{p \to 0^+} \sum_{i=1}^{n} |x_i - x^*|^p
+\end{equation*}
+Minimalizována modem $\hat{x}$ (nejčastěji se vyskytující hodnotou).
+
+\paragraph{$L_1$ — medián}\mbox{}\par
+\begin{equation*}
+	L_1(\mathbf{x}, x^*) = \sum_{i=1}^{n} |x_i - x^*|
+\end{equation*}
+Minimalizována mediánem $\tilde{x}$.
+
+\paragraph{$L_2$ — aritmetický průměr}\mbox{}\par
+\begin{equation*}
+	L_2(\mathbf{x}, x^*) = \sqrt{\sum_{i=1}^{n} (x_i - x^*)^2}
+\end{equation*}
+Minimalizována aritmetickým průměrem $\bar{x}$.
+
+\paragraph{$L_\infty$ — mid-range}\mbox{}\par
+\begin{equation*}
+	L_\infty(\mathbf{x}, x^*) = \max_{i \in \{1,\ldots,n\}} |x_i - x^*|, \qquad
+	x^* = \frac{\max \mathbf{x} + \min \mathbf{x}}{2}
+\end{equation*}
+Minimalizována mid-range --- minimalizuje největší možnou vzdálenost.
 
 
 \clearpage
@@ -2100,7 +2169,9 @@ phyper(3, m=20, n=30, k=10) # P(X<=3)
 	\begin{lstlisting}
 from scipy.stats import hypergeom
 hypergeom.pmf(3, M=50, n=20, N=10)
-# M=N (populace), n=K (uspesne), N=vyber
+# M = velikost populace (N v matematice)
+# n = pocet uspesnych v populaci (K)
+# N = velikost vyberu (n v matematice)
 	\end{lstlisting}
 	&
 	Hypergeometrické rozdělení z knihovny \texttt{scipy.stats}. \\
@@ -2476,6 +2547,63 @@ f.rvs(dfn=3, dfd=10, size=100) # simulace
 	& \texttt{dfn}$=k_1$ (čitatel), \texttt{dfd}$=k_2$ (jmenovatel). \\
 \end{funkcedict}
 
+
+\subsection{Centrální limitní věty}
+
+Centrální limitní věty (CLV) říkají, že součet velkého počtu nezávislých
+náhodných veličin s konečnou střední hodnotou a rozptylem konverguje
+v rozdělení k normálnímu rozdělení -- bez ohledu na původní rozdělení sčítanců.
+
+\subsubsection{Moivreova-Laplaceova centrální limitní věta}
+
+Nejspecifičtější případ: sčítance jsou i.i.d. Bernoulliho veličiny.
+
+\begin{itemize}[noitemsep]
+    \item $X_1, \ldots, X_n$ jsou i.i.d., každá $\sim \mathrm{Bernoulli}(\pi)$
+    \item $X = \sum_{i=1}^{n} X_i \sim \mathrm{Binom}(n, \pi)$
+    \item $E(X) = n\pi$, $\quad D(X) = n\pi(1-\pi)$
+\end{itemize}
+
+Pak dle Moivreovy-Laplaceovy CLV platí:
+
+\begin{equation*}
+    U \equiv \frac{X - n\pi}{\sqrt{n\pi(1-\pi)}} \xrightarrow{d} \mathcal{N}(0,1)
+\end{equation*}
+
+Binomické rozdělení pro dostatečně velké $n$ konverguje k normálnímu.
+
+\subsubsection{Lindebergova-Lévyho centrální limitní věta}
+
+Obecnější případ: sčítance jsou i.i.d. s libovolným (stejným) rozdělením.
+
+\begin{itemize}[noitemsep]
+    \item $X_1, \ldots, X_n$ jsou i.i.d. se stejným rozdělením
+    \item $E(X_i) = \mu < \infty$, $\quad D(X_i) = \sigma^2 < \infty$
+    \item $X = \sum_{i=1}^{n} X_i$, tedy $E(X) = n\mu$, $\quad D(X) = n\sigma^2$
+\end{itemize}
+
+Pak dle Lindebergovy-Lévyho CLV platí:
+
+\begin{equation*}
+    U \equiv \frac{X - n\mu}{\sqrt{n\sigma^2}} \xrightarrow{d} \mathcal{N}(0,1)
+\end{equation*}
+
+\subsubsection{Ljapunova centrální limitní věta}
+
+Nejobecnější případ: sčítance nemusí pocházet ze stejného rozdělení.
+
+\begin{itemize}[noitemsep]
+    \item $X_1, \ldots, X_n$ jsou nezávislé (ne nutně stejně rozdělené)
+    \item $E(X_i) < \infty$, $\quad D(X_i) < \infty$ pro každé $i$
+    \item $X = \sum_{i=1}^{n} X_i$
+\end{itemize}
+
+Pak dle Ljapunovy CLV platí:
+
+\begin{equation*}
+    U \equiv \frac{X - \sum_{i=1}^{n}E(X_i)}{\sqrt{\sum_{i=1}^{n}D(X_i)}}
+    \xrightarrow{d} \mathcal{N}(0,1)
+\end{equation*}
 
 \clearpage
 \section{Testování hypotéz}
