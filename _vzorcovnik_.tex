@@ -2608,6 +2608,62 @@ Pak dle Ljapunovy CLV platí:
 \clearpage
 \section{Testování hypotéz}
 
+\subsection{Obecná pravidla testování hypotéz}
+
+Každý statistický test porovnává \textbf{nulovou hypotézu $H_0$} s \textbf{alternativní hypotézou $H_1$}.
+Nezamítnutí $H_0$ neznamená, že $H_0$ platí -- pouze říká, že data nejsou dostatečně silným důkazem proti ní.
+
+\medskip
+\noindent\textbf{Dvě ekvivalentní pravidla zamítnutí $H_0$ (obě vedou ke stejnému závěru):}
+
+\begin{itemize}[noitemsep]
+	\item \textbf{p-hodnota:} zamítáme $H_0$, pokud $p\text{-hodnota} < \alpha$
+	\item \textbf{Kritická hodnota:} zamítáme $H_0$, pokud testová statistika padne do kritického oboru
+\end{itemize}
+
+\medskip
+\noindent\textbf{Jednostranný vs. oboustranný test} (závisí na formulaci $H_1$):
+
+{\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{0.22\textwidth} p{0.28\textwidth} p{0.22\textwidth} p{0.20\textwidth}}
+	\textbf{Typ testu} & \textbf{Alternativa $H_1$} & \textbf{Krit. obor} & \textbf{Kvantil} \\
+	\midrule
+	Oboustranný & $\theta \ne \theta_0$ & obě strany & $t_{1-\alpha/2}$ nebo $z_{1-\alpha/2}$ \\
+	Pravostranný & $\theta > \theta_0$ & pravá strana & $t_{1-\alpha}$ nebo $z_{1-\alpha}$ \\
+	Levostranný & $\theta < \theta_0$ & levá strana & $t_\alpha$ nebo $z_\alpha$ \\
+\end{tabular}}
+
+\noindent\hrule\medskip
+
+\subsection{Chyby testování hypotéz}
+
+Rozhodnutí o zamítnutí $H_0$ může být správné nebo chybné.
+\textbf{Hladina významnosti} $\alpha = P(\text{chyba I.\,typu})$ se volí předem (typicky 0{,}05 nebo 0{,}01).
+
+\medskip
+{\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{p{0.22\textwidth} | p{0.30\textwidth} | p{0.30\textwidth}}
+	& \textbf{$H_0$ se nezamítá} & \textbf{$H_0$ se zamítá} \\
+	\hline
+	\textbf{$H_0$ je pravdivá}
+		& Správné rozhodnutí\newline$(1-\alpha)$
+		& \textbf{Chyba I.\,typu}\newline$(\alpha)$ \\
+	\hline
+	\textbf{$H_0$ není pravdivá}
+		& \textbf{Chyba II.\,typu}\newline$(\beta)$
+		& Správné rozhodnutí\newline$(1-\beta)$ = síla testu \\
+\end{tabular}}
+
+\medskip
+\begin{itemize}[noitemsep]
+	\item $\alpha$ \textbf{(chyba I.\,typu):} zamítneme $H_0$, přestože platí. Volíme sami jako hladinu významnosti.
+	\item $\beta$ \textbf{(chyba II.\,typu):} nezamítneme $H_0$, přestože neplatí. Závisí na velikosti výběru a síle efektu.
+	\item $1-\beta$ \textbf{(síla testu):} pravděpodobnost správného zamítnutí nepravdivé $H_0$.
+	\item Snížení $\alpha$ zpravidla zvyšuje $\beta$ (při stejném $n$).
+\end{itemize}
+
+\noindent\hrule\medskip
+
 \subsection{Bodový odhad}
 
 Bodový odhad nahrazuje neznámý parametr populace jednou hodnotou
@@ -3205,6 +3261,26 @@ chi2, p, df, exp = stats.chi2_contingency(table)
 		Test nezávislosti (konting. tabulka) & $df = (r-1)(s-1)$ \quad ($r$ řádků, $s$ sloupců) \\
 	\end{tabular}
 } % end \small
+
+\noindent\hrule\medskip
+
+\subsection{Přehled testů -- jaký test kdy}
+
+{\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{0.34\textwidth} p{0.24\textwidth} p{0.34\textwidth}}
+	\textbf{Co testuji} & \textbf{Test} & \textbf{Podmínky / poznámka} \\
+	\midrule
+	Jeden průměr vs. konstanta $\mu_0$ & Jednovýběrový t-test & $df = n-1$ \\
+	Dva průměry, nezávislé výběry & Welchův dvouvýběrový t-test & $df \approx$ Welch; různé $\sigma^2$ \\
+	Dva průměry, spárovaná měření & Párový t-test & $df = n_{\text{párů}}-1$; testuje rozdíly $d_i$ \\
+	$k \ge 3$ průměrů & ANOVA (F-test) & $df = (k-1,\, n-k)$; vždy pravostranný \\
+	Jedna proporce vs. konstanta $\pi_0$ & Z-test proporce & normální aproximace \\
+	Shoda výběru s daným rozdělením & $\chi^2$ test dobré shody & oček. četnosti $e_j \ge 5$;\; $df = k-1$ \\
+	Nezávislost dvou kategorií & $\chi^2$ test nezávislosti & oček. četnosti $n'_{ij} \ge 5$;\; $df = (r-1)(s-1)$ \\
+	Lineární závislost, spojité proměnné & Pearsonova korelace & $H_0: \rho = 0$; citlivý na odlehlé hodnoty \\
+	Monotónní nebo ordinální závislost & Spearmanův korel. koef. & neparametrický; odolný vůči outlierům \\
+\end{tabular}}
 
 \section{Analýza závislosti}
 
