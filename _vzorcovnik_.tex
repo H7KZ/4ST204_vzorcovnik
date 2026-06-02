@@ -2559,6 +2559,7 @@ Pak dle Ljapunovy CLV platí:
     \xrightarrow{d} \mathcal{N}(0,1)
 \end{equation*}
 
+
 \clearpage
 \section{Testování hypotéz}
 
@@ -2592,7 +2593,7 @@ Nezamítnutí $H_0$ neznamená, že $H_0$ platí -- pouze říká, že data nejs
 \subsection{Chyby testování hypotéz}
 
 Rozhodnutí o zamítnutí $H_0$ může být správné nebo chybné.
-\textbf{Hladina významnosti} $\alpha = P(\text{chyba I.\,typu})$ se volí předem (typicky 0{,}05 nebo 0{,}01).
+\textbf{Hladina významnosti} $\alpha = P(\text{chyba I. typu})$ se volí předem (typicky 0{,}05 nebo 0{,}01).
 
 \medskip
 {\renewcommand{\arraystretch}{1.6}
@@ -2868,6 +2869,17 @@ stats.ttest_1samp(data, popmean=mu0)
 	\end{lstlisting}
 	& Porovnání průměru vzorku s pevnou hodnotou $\mu_0$. \\
 
+	\texttt{Ručně} &
+	\begin{lstlisting}
+from scipy.stats import t as t_dist
+n=49; xbar=23500; s=5500
+mu0=25000; alpha=0.05
+T = (xbar - mu0) / (s / np.sqrt(n))
+p_val = t_dist.cdf(T, df=n-1)
+t_kr  = t_dist.ppf(alpha, df=n-1)
+	\end{lstlisting}
+	& Ruční výpočet (jednostranný levostranný); pro pravostranný: \texttt{1-cdf(T,\ldots)}; pro oboustranný: \texttt{2*(1-cdf(abs(T),\ldots))}. \\
+
 \end{funkcedict}
 
 \subsection{Dvouvýběrový t-test (Welchův)}
@@ -2991,8 +3003,11 @@ p_val <- 2*(1 - pnorm(abs(Z)))
 	\texttt{proportions\_ztest} &
 	\begin{lstlisting}
 from statsmodels.stats.proportion import proportions_ztest
+z_stat, p_val = proportions_ztest(
+  count=90, nobs=150,
+  value=0.5, alternative='two-sided')
 	\end{lstlisting}
-	& Z-test proporce. Vrací $(Z, p)$. \\
+	& Z-test proporce. \texttt{count} = počet úspěchů, \texttt{nobs} = rozsah výběru, \texttt{value} = $\pi_0$. Vrací $(Z, p)$. \\
 
 \end{funkcedict}
 
@@ -3005,6 +3020,13 @@ Test je vždy \textbf{pravostranný}: zamítáme $H_0$, pokud $F \ge F_{1-\alpha
 	F = \frac{S_m/(k-1)}{S_v/(n-k)} \sim F(k-1, n-k), \quad
 	S_m = \sum_{j=1}^k n_j(\bar{x}_j - \bar{x})^2, \quad
 	S_v = \sum_{j=1}^k \sum_{i=1}^{n_j} (x_{ij} - \bar{x}_j)^2
+\end{equation*}
+
+\textbf{Poměr determinace} $\eta^2$ udává podíl variability vysvětlené skupinovým faktorem
+($S_c = S_m + S_v$ je celkový součet čtverců):
+
+\begin{equation*}
+	\eta^2 = \frac{S_m}{S_c} = \frac{S_m}{S_m + S_v} \in [0, 1]
 \end{equation*}
 
 \paragraph{Implementace v R}\mbox{}\par
@@ -3046,9 +3068,10 @@ SS_m <- sum(tapply(y,skupina,
 SS_v <- sum(tapply(y,skupina,
   function(g) sum((g-mean(g))^2)))
 F_stat <- (SS_m/(k-1))/(SS_v/(n-k))
+eta2  <- SS_m / (SS_m + SS_v)
 	\end{lstlisting}
 	&
-	Ruční výpočet součtů čtverců mezi skupinami a uvnitř skupin. \\
+	Ruční výpočet součtů čtverců; $\eta^2 = S_m / S_c$ je poměr determinace. \\
 
 \end{funkcedict}
 
@@ -3061,6 +3084,20 @@ F_stat <- (SS_m/(k-1))/(SS_v/(n-k))
 stats.f_oneway(A, B, C)
 	\end{lstlisting}
 	& Testování shody průměrů u tří a více skupin. \\
+
+	\texttt{Poměr determinace $\eta^2$} &
+	\begin{lstlisting}
+import numpy as np
+groups = [A, B, C]
+y_all = np.concatenate(groups)
+grand = y_all.mean()
+SS_m = sum(len(g)*(g.mean()-grand)**2
+           for g in groups)
+SS_v = sum(((g - g.mean())**2).sum()
+           for g in groups)
+eta2 = SS_m / (SS_m + SS_v)
+	\end{lstlisting}
+	& Poměr determinace $\eta^2 = S_m / S_c$; hodnota 0--1, jak velkou část variability vysvětluje faktor skupiny. \\
 
 \end{funkcedict}
 
@@ -3124,7 +3161,18 @@ Pro tabulku $2 \times 2$:
 	G = \frac{n\,(n_{11}n_{22} - n_{12}n_{21})^2}{n_{1.}\, n_{2.}\, n_{.1}\, n_{.2}}
 \end{equation*}
 
-Síla závislosti: Pearsonovo $C = \sqrt{\dfrac{G}{n+G}}$;\quad Cramérovo $V = \sqrt{\dfrac{G}{n\,(\min(r,s)-1)}} \in [0,1]$, kde $m = \min(r,s)$. \\
+Síla závislosti ($m = \min(r,s)$):
+
+\begin{equation*}
+	C = \sqrt{\frac{G}{G + n}} \in \left[0,\, \sqrt{\frac{m-1}{m}}\right)
+	\qquad
+	V = \sqrt{\frac{G}{n\,(m-1)}} \in [0, 1]
+\end{equation*}
+
+\noindent\textbf{Pearsonovo $C$} nikdy nedosáhne hodnoty 1 -- ve jmenovateli je vždy $G+n > G$,
+takže zlomek je přísně menší než 1. Maximum závisí na rozměrech tabulky.
+\textbf{Cramérovo $V$} je upraveno tak, aby při dokonalé závislosti dosahovalo 1, a je proto vhodné pro porovnání tabulek různých rozměrů.
+
 Interpretace $V$: $< 0{,}1$ zanedbatelná $\cdot$ $0{,}1$--$0{,}3$ slabá $\cdot$ $0{,}3$--$0{,}5$ středně silná $\cdot$ $> 0{,}5$ silná.
 
 \paragraph{Implementace v R}\mbox{}\par
@@ -3238,10 +3286,19 @@ chi2, p, df, exp = stats.chi2_contingency(table)
 Měří sílu \textbf{lineární} závislosti dvou spojitých proměnných.
 
 \begin{equation*}
-	r = \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^n (x_i - \bar{x})^2 \cdot \sum_{i=1}^n (y_i - \bar{y})^2}}, \quad r \in [-1, 1]
+	r = \frac{s_{xy}}{s_x \cdot s_y}
+	= \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^n (x_i - \bar{x})^2 \cdot \sum_{i=1}^n (y_i - \bar{y})^2}},
+	\quad r \in [-1, 1]
 \end{equation*}
 
-\textbf{Výpočetní tvar} (vhodný pro ruční výpočet z tabulky průměrů):
+kde $s_{xy} = \dfrac{1}{n-1}\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y})$ je výběrová kovariance.
+
+\medskip
+\noindent\textbf{Znaménko:} $r$ má vždy stejné znaménko jako $s_{xy}$ (dělíme kladnými $s_x, s_y$).
+Kovariance, korelační koeficient i směrnice regresní přímky mají proto vždy shodné znaménko.
+
+\medskip
+\noindent\textbf{Výpočetní tvar} (vhodný pro ruční výpočet z tabulky průměrů):
 
 \begin{equation*}
 	r_{yx} = \frac{\overline{xy} - \bar{x}\cdot\bar{y}}{\sqrt{\bigl(\overline{x^2} - \bar{x}^2\bigr)\bigl(\overline{y^2} - \bar{y}^2\bigr)}}
@@ -3249,6 +3306,7 @@ Měří sílu \textbf{lineární} závislosti dvou spojitých proměnných.
 
 kde $\overline{xy} = \tfrac{1}{n}\sum x_i y_i$,\; $\overline{x^2} = \tfrac{1}{n}\sum x_i^2$,\; $\overline{y^2} = \tfrac{1}{n}\sum y_i^2$.
 
+\medskip
 Test $H_0\colon \rho = 0$: $T = r\sqrt{(n-2)/(1-r^2)} \sim t(n-2)$. \\
 Interpretace $|r|$: $< 0{,}3$ slabá $\cdot$ $0{,}3$--$0{,}7$ střední $\cdot$ $> 0{,}7$ silná závislost. Znaménko udává směr.
 
@@ -3272,6 +3330,17 @@ cor.test(x, y, method = "pearson")
 	&
 	Test $H_0\colon \rho=0$; vrací $p$-hodnotu, $T$ a IS pro $\rho$. \\
 
+	\texttt{Ručně} &
+	\begin{lstlisting}
+s_xy <- cov(x, y)
+r    <- s_xy / (sd(x) * sd(y))
+n    <- length(x)
+T    <- r * sqrt((n-2)/(1-r^2))
+p_val<- 2*(1 - pt(abs(T), df=n-2))
+	\end{lstlisting}
+	&
+	Ruční výpočet přes kovarianci; $p$-hodnota pro oboustranný test $H_0\colon\rho=0$. \\
+
 \end{funkcedict}
 
 \paragraph{Implementace v Python}\mbox{}\par
@@ -3283,6 +3352,81 @@ cor.test(x, y, method = "pearson")
 r, p = stats.pearsonr(x, y)
 	\end{lstlisting}
 	& Vrací korelační koeficient $r$ a p-hodnotu testu $H_0\colon \rho = 0$. \\
+
+	\texttt{Ručně} &
+	\begin{lstlisting}
+import numpy as np
+s_xy = np.cov(x, y, ddof=1)[0,1]
+r    = s_xy / (np.std(x,ddof=1) *
+               np.std(y,ddof=1))
+n    = len(x)
+T    = r * np.sqrt((n-2)/(1-r**2))
+	\end{lstlisting}
+	& Ruční výpočet přes kovarianci; \texttt{np.cov} vrací kovarianční matici, \texttt{[0,1]} vybere $s_{xy}$. \\
+
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
+\subsubsection{Koeficient determinace $R^2$ a index korelace $I_{yx}$}
+
+Udává, jaký podíl variability $Y$ je vysvětlen lineární závislostí na $X$.
+Pro jednoduchou lineární regresi platí $R^2 = r^2$ (čtverec Pearsonova korelačního koeficientu).
+
+\begin{equation*}
+	R^2 = r^2 \in [0, 1]
+\end{equation*}
+
+\noindent Příklad: $r = 0{,}9 \Rightarrow R^2 = 0{,}81$ -- model vysvětluje 81~\% variability $Y$.
+Záporná korelace dává stejný $R^2$: $r = -0{,}9 \Rightarrow R^2 = 0{,}81$.
+
+\medskip
+\textbf{Index korelace} je odmocnina z $R^2$ a vyjadřuje těsnost závislosti na stupnici $[0,1]$:
+
+\begin{equation*}
+	I_{yx} = \sqrt{R^2} = \sqrt{\frac{S_T}{S_Y}}
+\end{equation*}
+
+Pro jednoduchou lineární regresi platí $I_{yx} = |r_{yx}|$, tedy index korelace se rovná absolutní hodnotě Pearsonova korelačního koeficientu.
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{$R^2$ z korelace} &
+	\begin{lstlisting}
+R2 <- cor(x, y)^2
+	\end{lstlisting}
+	& Koeficient determinace jako čtverec Pearsonova $r$. \\
+
+	\texttt{$R^2$ z regresního modelu} &
+	\begin{lstlisting}
+m  <- lm(y ~ x)
+R2 <- summary(m)$r.squared
+	\end{lstlisting}
+	& \texttt{summary(lm())} vrací $R^2$ přímo (\texttt{r.squared}). \\
+
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{$R^2$ z korelace} &
+	\begin{lstlisting}
+from scipy.stats import pearsonr
+r, _ = pearsonr(x, y)
+R2 = r**2
+	\end{lstlisting}
+	& Koeficient determinace jako čtverec Pearsonova $r$. \\
+
+	\texttt{$R^2$ z regresního modelu} &
+	\begin{lstlisting}
+from scipy.stats import linregress
+res = linregress(x, y)
+R2  = res.rvalue**2
+	\end{lstlisting}
+	& \texttt{rvalue} je Pearsonovo $r$; jeho čtverec je $R^2$. \\
 
 \end{funkcedict}
 
@@ -3397,25 +3541,22 @@ print(m2.rsquared_adj)
 \end{funkcedict}
 \noindent\hrule\medskip
 
-\subsubsection{Index determinace $R^2$ a index korelace $I_{yx}$}
+\subsubsection{Součty čtverců a koeficient determinace $R^2$}
 
 \begin{equation*}
 	S_Y = S_T + S_R, \qquad R^2 = \frac{S_T}{S_Y} \in [0,1], \qquad
 	R^2_{ADJ} = 1 - (1-R^2)\frac{n-1}{n-p}
 \end{equation*}
 
-kde $S_Y = \sum(y_i-\bar{y})^2$ (celkový), $S_T = \sum(\hat{y}_i-\bar{y})^2$ (regresní), $S_R = \sum e_i^2$ (reziduální), $p$ = počet odhadovaných parametrů (pro jednoduchou regresi $p=2$).
-
-\textbf{Interpretace $R^2$:} podíl rozptylu $Y$ vysvětlený modelem. $R^2 = 0{,}8$ znamená, že model vysvětluje 80\,\% variability $Y$.
-
-\medskip
-\textbf{Index korelace} je odmocnina z $R^2$ a vyjadřuje těsnost závislosti na stupnici $[0,1]$:
+kde $S_Y = \sum(y_i-\bar{y})^2$ (celkový), $S_T = \sum(\hat{y}_i-\bar{y})^2$ (teoretický), $S_R = \sum(y_i - \hat{y}_i)^2$ (reziduální), $p$ = počet odhadovaných parametrů (pro jednoduchou regresi $p=2$).
 
 \begin{equation*}
-	I_{yx} = \sqrt{R^2} = \sqrt{\frac{S_T}{S_Y}}
+	\mathrm{MSE} = \frac{S_R}{n} = \frac{\sum(y_i-\hat{y}_i)^2}{n},
+	\qquad
+	\mathrm{RMSE} = \sqrt{\mathrm{MSE}}
 \end{equation*}
 
-Pro \textbf{jednoduchou lineární regresi} platí $I_{yx} = |r_{yx}|$, tedy index korelace se rovná absolutní hodnotě Pearsonova korelačního koeficientu.
+\noindent MSE (střední čtvercová chyba) měří průměrnou kvadratickou odchylku předpovědi; RMSE je ve stejných jednotkách jako $Y$.
 
 \paragraph{Implementace v R}\mbox{}\par
 
@@ -3432,17 +3573,33 @@ summary(m)$r.squared  # zkratka
 	&
 	$S_Y = S_T + S_R$; $R^2 = S_T/S_Y$ -- podíl rozptylu $Y$ vysvětlený modelem. \\
 
+	\texttt{MSE a RMSE} &
+	\begin{lstlisting}
+MSE  <- mean(residuals(m)^2)
+RMSE <- sqrt(MSE)
+	\end{lstlisting}
+	& \texttt{residuals(m)} vrací $e_i = y_i - \hat{y}_i$; průměr jejich čtverců je MSE. \\
+
 \end{funkcedict}
 
 \paragraph{Implementace v Python}\mbox{}\par
 
 \begin{funkcedict}
 
-	\texttt{r\_squared} &
+	\texttt{$R^2$} &
 	\begin{lstlisting}
 r_squared = res.rvalue**2
 	\end{lstlisting}
 	& $R^2$ jako čtverec korelačního koeficientu (z \texttt{stats.linregress}). \\
+
+	\texttt{MSE a RMSE} &
+	\begin{lstlisting}
+import numpy as np
+e    = y - res.intercept - res.slope*x
+MSE  = np.mean(e**2)
+RMSE = np.sqrt(MSE)
+	\end{lstlisting}
+	& Rezidua ručně z parametrů \texttt{linregress}; nebo \texttt{sklearn.metrics.mean\_squared\_error(y, y\_hat)}. \\
 
 \end{funkcedict}
 
@@ -3589,9 +3746,15 @@ y[1:] / y[:-1]
 
 \noindent\hrule\medskip
 
-\subsubsection{Chronologický průměr}
+\subsubsection{Průměr časové řady}
 
-Pro okamžikovou časovou řadu (stejně dlouhé intervaly -- nevážený):
+\noindent\textbf{Intervalová časová řada} -- prostý průměr:
+
+\begin{equation*}
+	\bar{y} = \frac{1}{n}\sum_{t=1}^{n} y_t
+\end{equation*}
+
+\noindent\textbf{Okamžiková časová řada} -- chronologický průměr (stejně dlouhé intervaly):
 
 \begin{equation*}
 	\bar{y} = \frac{\tfrac{1}{2}y_1 + y_2 + \dots + y_{n-1} + \tfrac{1}{2}y_n}{n-1}
@@ -3607,14 +3770,19 @@ Pro nestejně dlouhé intervaly (vážený chronologický průměr, délky inter
 
 \begin{funkcedict}
 
-	\texttt{Chronologický průměr} &
+	\texttt{Prostý průměr (intervalová)} &
+	\begin{lstlisting}
+mean(y)
+	\end{lstlisting}
+	& Průměr intervalové časové řady. \\
+
+	\texttt{Chronologický průměr (okamžiková)} &
 	\begin{lstlisting}
 n <- length(y)
 (y[1]/2 + sum(y[2:(n-1)]) +
   y[n]/2) / (n-1)
 	\end{lstlisting}
-	&
-	Průměr okamžikové časové řady; krajní hodnoty mají váhu $\tfrac{1}{2}$. \\
+	& Průměr okamžikové časové řady; krajní hodnoty mají váhu $\tfrac{1}{2}$. \\
 
 \end{funkcedict}
 
@@ -3622,7 +3790,13 @@ n <- length(y)
 
 \begin{funkcedict}
 
-	\texttt{Chronologický průměr} &
+	\texttt{Prostý průměr (intervalová)} &
+	\begin{lstlisting}
+np.mean(y)
+	\end{lstlisting}
+	& Průměr intervalové časové řady. \\
+
+	\texttt{Chronologický průměr (okamžiková)} &
 	\begin{lstlisting}
 (y[0]/2 + np.sum(y[1:-1]) + y[-1]/2) / (len(y)-1)
 	\end{lstlisting}
@@ -3632,15 +3806,28 @@ n <- length(y)
 
 \subsection{Řetězové a bazické indexy}
 
-\textbf{Řetězový index} (mezičasový): poměr k předchozímu období.
-\textbf{Bazický index}: poměr k základnímu období (období 1).
+\textbf{Řetězový index} $I_{t/t-1}$ (= \textbf{koeficient růstu} $k_t$): poměr k \emph{předchozímu} období.
+\textbf{Bazický index} $I_{t/1}$: poměr k \emph{základnímu} období (období 1).
+Oba výpočty jsou totožné -- liší se pouze volbou základu srovnání.
 
-\begin{align*}
-	k_t = I_{t/t-1} &= \frac{y_t}{y_{t-1}}
-	  & \bar{k}   & = \sqrt[n-1]{k_2 k_3 \cdots k_n} = \sqrt[n-1]{\frac{y_n}{y_1}} \\[4pt]
-	I_{t/1} &= I_{2/1} \cdot I_{3/2} \cdots I_{t/t-1}
-	  & I_{k/t-1} & = \frac{y_t}{y_{t-1}} = \frac{I_{t/1}}{I_{(t-1)/1}}
-\end{align*}
+\medskip
+\noindent\textbf{Řetězový index / koeficient růstu:}
+\begin{equation*}
+	k_t = I_{t/t-1} = \frac{y_t}{y_{t-1}}
+	\qquad
+	\bar{k} = \sqrt[n-1]{k_2 \cdot k_3 \cdots k_n} = \sqrt[n-1]{\frac{y_n}{y_1}}
+	\quad \text{(průměrné tempo růstu)}
+\end{equation*}
+
+\noindent Průměrné tempo růstu $\bar{k}$ je \textbf{geometrický průměr} koeficientů růstu $k_t$.
+\medskip
+
+\noindent\textbf{Bazický index} (rozklad přes řetězové indexy a zpětný přepočet):
+\begin{equation*}
+	I_{t/1} = I_{2/1} \cdot I_{3/2} \cdots I_{t/t-1}
+	\qquad
+	I_{t/t-1} = \frac{y_t}{y_{t-1}} = \frac{I_{t/1}}{I_{(t-1)/1}}
+\end{equation*}
 
 \noindent\hrule\medskip
 
@@ -3685,6 +3872,10 @@ np.convolve(y, np.ones(m)/m, mode='valid')
 Pro sudé $m$: centrovaný KP = průměr dvou po sobě jdoucích prostých KP délky $m$.
 Používá se pro čtvrtletní nebo měsíční data.
 
+\begin{equation*}
+	\bar{y}_t = \frac{y_{t-p} + 2y_{t-p+1} + \cdots + 2y_t + \cdots + 2y_{t+p-1} + y_{t+p}}{2m}, \qquad m = 2p
+\end{equation*}
+
 \paragraph{Implementace v R}\mbox{}\par
 
 \begin{funkcedict}
@@ -3692,12 +3883,12 @@ Používá se pro čtvrtletní nebo měsíční data.
 	\texttt{Centrovaný KP (sudé m)} &
 	\begin{lstlisting}
 m <- 4  # sude m -- centrovany KP
-kp_l <- filter(y, rep(1/m,m), sides=1)
-kp_c <- (kp_l +
-  c(NA, kp_l[-length(kp_l)])) / 2
+kp_c <- filter(y,
+  c(0.5, rep(1, m-1), 0.5)/m,
+  sides=2)
 	\end{lstlisting}
 	&
-	\texttt{sides=1}: průměr posledních $m$ hodnot. Centrovaný KP = průměr dvou sousedních prostých KP. \\
+	Váhy \texttt{c(0.5,\,1,\ldots,1,\,0.5)/m} odpovídají vzorci; \texttt{sides=2} = symetrické okno, výsledek je správně zarovnán na $t$. \\
 
 \end{funkcedict}
 
@@ -3708,9 +3899,11 @@ kp_c <- (kp_l +
 	\texttt{Centrovaný KP} &
 	\begin{lstlisting}
 # Pro m=4 (ctvrtletni data)
-pd.Series(y).rolling(4).mean().rolling(2).mean().shift(-1)
+m = 4
+w = np.array([0.5] + [1]*(m-1) + [0.5]) / m
+kp_c = np.convolve(y, w[::-1], mode='valid')
 	\end{lstlisting}
-	& Skutečný centrovaný klouzavý průměr pro sudé $m$. Vyžaduje průměr přes $m$ období následovaný oknem délky 2 a posunem \texttt{shift(-1)}. \\
+	& Váhy \texttt{[0.5,\,1,\ldots,1,\,0.5]/m} odpovídají vzorci; \texttt{mode='valid'} ořízne krajní hodnoty stejně jako \texttt{filter()} v~R. \\
 
 \end{funkcedict}
 
@@ -3719,31 +3912,68 @@ pd.Series(y).rolling(4).mean().rolling(2).mean().shift(-1)
 \subsubsection{Dummy proměnné a model}
 
 Model: $y_t = \beta_0 + \beta_1 t + \gamma_1 D_1 + \gamma_2 D_2 + \gamma_3 D_3 + \varepsilon_t$
-(sezónnost délky 4; $D_j$ jsou dummy proměnné; 4.\ čtvrtletí je referenční kategorie).
+(sezónnost délky 4; $D_j$ jsou dummy proměnné; \textbf{4.\ čtvrtletí je referenční kategorie}).
+
+\medskip
+\noindent$\hat\beta_0$ = hodnota trendu pro Q4 při $t=0$;
+$\hat\gamma_j$ = odchylka $j$-tého čtvrtletí od Q4.
+Sezónní složky se po odhadu centrují:
+
+\begin{equation*}
+	\hat{s} = \frac{\hat\gamma_1 + \hat\gamma_2 + \hat\gamma_3 + 0}{4},
+	\qquad
+	S_j = \hat\gamma_j - \hat{s}\;(j=1,2,3),
+	\quad
+	S_4 = -\hat{s},
+	\quad
+	\hat{T}_t = (\hat\beta_0 + \hat{s}) + \hat\beta_1 t
+\end{equation*}
 
 \paragraph{Implementace v R}\mbox{}\par
 
 \begin{funkcedict}
 
-	\texttt{Dummy proměnné} &
+	\texttt{Dummy proměnné (Q4 = reference)} &
 	\begin{lstlisting}
-t <- 1:length(y)
+t  <- 1:length(y)
+Q1 <- as.integer(t %% 4 == 1)
 Q2 <- as.integer(t %% 4 == 2)
 Q3 <- as.integer(t %% 4 == 3)
-Q4 <- as.integer(t %% 4 == 0)
-# Q1 je referencni (t %% 4 == 1)
+# Q4 je referencni (t %% 4 == 0)
+m  <- lm(y ~ t + Q1 + Q2 + Q3)
+summary(m); fitted(m)
 	\end{lstlisting}
-	&
-	Vždy o jednu méně dummy než sezón -- jinak hrozí multikolinearita. \\
+	& Dle metodiky přednášky 11. $\hat\gamma_j$ = odchylka od Q4. \\
 
-	\texttt{lm() s trendem a sezónností} &
+	\texttt{Přepočet sezónních složek} &
 	\begin{lstlisting}
-m <- lm(y ~ t + Q2 + Q3 + Q4)
-summary(m)
-fitted(m)   # vyrovnane hodnoty
+g     <- coef(m)[c("Q1","Q2","Q3")]
+s_hat <- sum(g) / 4   # prumer vcetne Q4=0
+S     <- g - s_hat    # S1, S2, S3
+S4    <- -s_hat
+b0_T  <- coef(m)["(Intercept)"] + s_hat
 	\end{lstlisting}
-	&
-	Odhaduje lineární trend a sezónní odchylky; $\hat{\gamma}_j$ = odchylka $j$-tého čtvrtletí od referenčního. \\
+	& Centrování: $\sum S_j = 0$; opravený intercept \texttt{b0\_T} = hodnota trendu pro průměrné čtvrtletí. \\
+
+\end{funkcedict}
+
+\medskip
+\noindent\textbf{Alternativa -- centrovaný přístup (\texttt{contr.sum}):}
+
+\begin{funkcedict}
+
+	\texttt{contr.sum (R)} &
+	\begin{lstlisting}
+kvartal <- as.factor(
+  rep(1:4, length(y)/4))
+contrasts(kvartal) <- contr.sum(4)
+m2 <- lm(y ~ t + kvartal)
+summary(m2)
+# Intercept = prumerne ctvrtleti
+# kvartal1..3 = S1..S3 primo
+# S4 = -(kvartal1+kvartal2+kvartal3)
+	\end{lstlisting}
+	& Intercept = hodnota trendu pro průměrné čtvrtletí; $\sum S_j = 0$; sezónní složky jsou přímo ve výstupu bez ručního přepočtu. \\
 
 \end{funkcedict}
 
@@ -3751,32 +3981,36 @@ fitted(m)   # vyrovnane hodnoty
 
 \begin{funkcedict}
 
-	\texttt{Dummy proměnné} &
+	\texttt{smf.ols (Q4 = reference)} &
 	\begin{lstlisting}
-t = np.arange(1, len(y) + 1)
+import numpy as np, pandas as pd
+import statsmodels.formula.api as smf
+t  = np.arange(1, len(y)+1)
+Q1 = (t % 4 == 1).astype(int)
 Q2 = (t % 4 == 2).astype(int)
 Q3 = (t % 4 == 3).astype(int)
-Q4 = (t % 4 == 0).astype(int)
-# Q1 je referencni (t % 4 == 1)
+df = pd.DataFrame(
+  {'y':y,'t':t,'Q1':Q1,'Q2':Q2,'Q3':Q3})
+m  = smf.ols('y ~ t + Q1 + Q2 + Q3',
+             data=df).fit()
+print(m.summary())
 	\end{lstlisting}
-	&
-	Vždy o jednu méně dummy než sezón -- jinak hrozí multikolinearita. \\
+	& Dle metodiky přednášky 11. $\hat\gamma_j$ = odchylka od Q4. \\
 
-	\texttt{LinearRegression()} s trendem a sezónností &
+	\texttt{contr.sum (Python)} &
 	\begin{lstlisting}
-from sklearn.linear_model import LinearRegression
-import numpy as np
-
-X = np.column_stack([t, Q2, Q3, Q4])
-m = LinearRegression().fit(X, y)
-print(m.intercept_)   # beta_0
-print(m.coef_)        # beta_1, gamma_2,3,4
-fitted = m.predict(X) # vyrovnane hodnoty
+df['kvartal'] = pd.Categorical(
+  list(range(1,5))*(len(y)//4))
+m2 = smf.ols(
+  'y ~ t + C(kvartal, Sum)',
+  data=df).fit()
+print(m2.summary())
 	\end{lstlisting}
-	&
-	Odhaduje lineární trend a sezónní odchylky; $\hat{\gamma}_j$ = odchylka $j$-tého čtvrtletí od referenčního. \\
+	& Ekvivalent \texttt{contr.sum}; intercept = průměrné čtvrtletí. \\
 
 \end{funkcedict}
+
+\noindent\hrule\medskip
 
 \subsubsection{Dekompozice časové řady}
 
@@ -3844,13 +4078,13 @@ Sestavíme \texttt{data.frame} s $t$ a dummy proměnnými pro každé nové pozo
 t_n <- 21:24
 nd <- data.frame(
   t  = t_n,
+  Q1 = as.integer(t_n %% 4 == 1),
   Q2 = as.integer(t_n %% 4 == 2),
-  Q3 = as.integer(t_n %% 4 == 3),
-  Q4 = as.integer(t_n %% 4 == 0))
+  Q3 = as.integer(t_n %% 4 == 3))
 predict(m, newdata = nd)
 	\end{lstlisting}
 	&
-	Predikce na budoucí kvartály. \\
+	Predikce na budoucí kvartály; názvy sloupců musí odpovídat proměnným v modelu. \\
 
 \end{funkcedict}
 
@@ -3858,14 +4092,134 @@ predict(m, newdata = nd)
 
 \begin{funkcedict}
 
-	\texttt{model.predict(\allowbreak X\_new)} &
+	\texttt{smf predikce} &
 	\begin{lstlisting}
-model.predict(X_new)
+t_n = np.arange(21, 25)
+nd  = pd.DataFrame({
+  't':  t_n,
+  'Q1': (t_n % 4 == 1).astype(int),
+  'Q2': (t_n % 4 == 2).astype(int),
+  'Q3': (t_n % 4 == 3).astype(int)})
+m.predict(nd)
 	\end{lstlisting}
-	& Predikce na nová data (scikit-learn nebo statsmodels). \\
+	& Predikce na budoucí kvartály; názvy sloupců musí odpovídat proměnným v modelu. \\
 
 \end{funkcedict}
 
+\subsection{Nelineární trendy časových řad}
+
+\subsubsection{Kvadratický (parabolický) trend}
+
+Model: $\hat{T}_t = b_0 + b_1 t + b_2 t^2$, kde $t = 1, 2, \ldots, n$ je časová proměnná.
+
+Znaménko $b_2$ určuje tvar paraboly: $b_2 > 0$ -- konvexní (tvar~U, minumum), $b_2 < 0$ -- konkávní (tvar~$\cap$, maximum).
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{Kvadratický trend} &
+	\begin{lstlisting}
+t <- 1:length(y)
+m <- lm(y ~ t + I(t^2))
+summary(m)       # b0, b1, b2, R^2
+fitted(m)        # vyrovnane hodnoty
+	\end{lstlisting}
+	&
+	Funkce \texttt{I(t\^{}2)} izoluje mocninu od vzorcové syntaxe. Koeficienty v \texttt{Estimate}: \texttt{(Intercept)} = $b_0$, \texttt{t} = $b_1$, \texttt{I(t\^{}2)} = $b_2$. \\
+
+	\texttt{Predikce} &
+	\begin{lstlisting}
+# Predikce pro t = 11 (rok 2018)
+predict(m, newdata = data.frame(t = 11))
+	\end{lstlisting}
+	&
+	Dosadí $t=11$ do odhadnutého modelu $\hat{T}_{11} = b_0 + b_1 \cdot 11 + b_2 \cdot 121$. \\
+
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{Kvadratický trend} &
+	\begin{lstlisting}
+import numpy as np
+import statsmodels.formula.api as smf
+t = np.arange(1, len(y) + 1)
+df['t'] = t
+df['t2'] = t**2
+m = smf.ols('y ~ t + t2', data=df).fit()
+print(m.summary())
+	\end{lstlisting}
+	& Kvadratický člen se přidá jako nový sloupec \texttt{t2}; \texttt{summary()} vrátí $b_0, b_1, b_2$ a $R^2$. \\
+
+\end{funkcedict}
+
+\subsubsection{Exponenciální trend}
+
+Vhodný tehdy, kdy časová řada roste (nebo klesá) relativně konstantním tempem.
+
+Model v logaritmické linearizaci:
+\begin{equation*}
+	y_t = b_0 \cdot b_1^t
+	\quad\Longrightarrow\quad
+	\ln y_t = \ln b_0 + t \cdot \ln b_1
+	\quad\Longrightarrow\quad
+	y^* = \beta_0^* + \beta_1^* t
+\end{equation*}
+
+kde $y^* = \ln y_t$, $\beta_0^* = \ln b_0$, $\beta_1^* = \ln b_1$.
+Zpětná transformace: $b_0 = e^{\beta_0^*}$, $b_1 = e^{\beta_1^*}$.
+Tempo růstu: $(b_1 - 1) \times 100\,\%$ za jednu časovou jednotku.
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{Exponenciální trend} &
+	\begin{lstlisting}
+t <- 1:length(y)
+m_exp <- lm(log(y) ~ t)
+summary(m_exp)   # beta0*, beta1*
+# Zpetna transformace
+b0 <- exp(coef(m_exp)[1])  # b0
+b1 <- exp(coef(m_exp)[2])  # b1
+	\end{lstlisting}
+	&
+	Regrese probíhá na $\ln y$; výsledné koeficienty je nutné zpětně transformovat pomocí $e^{(\cdot)}$. \\
+
+	\texttt{Predikce (orig. škála)} &
+	\begin{lstlisting}
+# Predikce pro t = 11
+y_hat_log <- predict(m_exp,
+  newdata = data.frame(t = 11))
+exp(y_hat_log)   # zpet na puvodni skalu
+	\end{lstlisting}
+	&
+	\texttt{predict} vrací hodnotu na logaritmické škále; \texttt{exp()} převede zpět na původní. \\
+
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+
+	\texttt{Exponenciální trend} &
+	\begin{lstlisting}
+import numpy as np
+import statsmodels.formula.api as smf
+df['log_y'] = np.log(df['y'])
+df['t'] = np.arange(1, len(df) + 1)
+m = smf.ols('log_y ~ t', data=df).fit()
+b0 = np.exp(m.params['Intercept'])
+b1 = np.exp(m.params['t'])
+# Predikce
+y_pred = np.exp(m.predict(df_new))
+	\end{lstlisting}
+	& Linearizace přes \texttt{log\_y}; zpětná transformace pomocí \texttt{np.exp()}. \\
+
+\end{funkcedict}
 
 \clearpage
 \section{Indexní analýza}
@@ -3916,6 +4270,46 @@ Agregují individuální změny přes všechny druhy zboží.
 kde $\bar{p}$ je vážený průměr cen (\texttt{weighted.mean}),
 kde váhy jsou množství~$q$: v~období~0 jsou váhy $q_0$, v~období~1 jsou váhy~$q_1$.
 
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Individuální indexy} &
+	\begin{lstlisting}
+Ip <- p1 / p0
+Iq <- q1 / q0
+IQ <- (p1 * q1) / (p0 * q0)
+	\end{lstlisting}
+	& Individuální cenový, množstevní a výdajový index pro každé zboží. \\
+	\texttt{Složené individ. indexy} &
+	\begin{lstlisting}
+I_sum_q <- sum(q1) / sum(q0)
+I_sum_Q <- sum(p1*q1) / sum(p0*q0)
+I_p_bar <- weighted.mean(p1, q1) /
+           weighted.mean(p0, q0)
+	\end{lstlisting}
+	& Složené individuální indexy součtů množství, výdajů a průměrné ceny. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Individuální indexy} &
+	\begin{lstlisting}
+Ip = p1 / p0
+Iq = q1 / q0
+IQ = (p1 * q1) / (p0 * q0)
+	\end{lstlisting}
+	& Individuální cenový, množstevní a výdajový index pro každé zboží. \\
+	\texttt{Složené individ. indexy} &
+	\begin{lstlisting}
+I_sum_q = q1.sum() / q0.sum()
+I_sum_Q = (p1*q1).sum() / (p0*q0).sum()
+I_p_bar = (np.average(p1, weights=q1) /
+           np.average(p0, weights=q0))
+	\end{lstlisting}
+	& Složené individuální indexy součtů množství, výdajů a průměrné ceny. \\
+\end{funkcedict}
+
 \noindent\hrule\medskip
 
 \subsection{Souhrnné (Laspeyresovy a Paascheho) indexy}
@@ -3959,6 +4353,75 @@ $Q_0 = p_0 q_0$, $Q_1 = p_1 q_1$ jsou výdaje.
 	\item \textbf{Paascheho index} (${}^P$): fixuje váhy z \textbf{běžného} období ($q_1$ nebo $p_1$). Odpovídá otázce: \emph{o kolik je dražší nakoupit dnešní spotřební koš oproti základnímu období?}
 	\item Výsledek $> 1$ znamená nárůst (ceny/množství vzrostly), $< 1$ pokles.
 \end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Laspeyresovy indexy} &
+	\begin{lstlisting}
+IpL <- sum(p1 * q0) / sum(p0 * q0)
+IqL <- sum(p0 * q1) / sum(p0 * q0)
+	\end{lstlisting}
+	& Laspeyresův cenový a množstevní index (váhy z období~0). \\
+	\texttt{Paascheho indexy} &
+	\begin{lstlisting}
+IpP <- sum(p1 * q1) / sum(p0 * q1)
+IqP <- sum(p1 * q1) / sum(p1 * q0)
+	\end{lstlisting}
+	& Paascheho cenový a množstevní index (váhy z období~1). \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Laspeyresovy indexy} &
+	\begin{lstlisting}
+IpL = (p1 * q0).sum() / (p0 * q0).sum()
+IqL = (p0 * q1).sum() / (p0 * q0).sum()
+	\end{lstlisting}
+	& Laspeyresův cenový a množstevní index (váhy z období~0). \\
+	\texttt{Paascheho indexy} &
+	\begin{lstlisting}
+IpP = (p1 * q1).sum() / (p0 * q1).sum()
+IqP = (p1 * q1).sum() / (p1 * q0).sum()
+	\end{lstlisting}
+	& Paascheho cenový a množstevní index (váhy z období~1). \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
+\subsection{Fisherův (ideální) index}
+
+Fisherův index je geometrický průměr Laspeyresova a Paascheho indexu.
+Platí $Ip^{(F)} \cdot Iq^{(F)} = I(\Sigma Q)$ (faktorový rozklad).
+
+\begin{equation*}
+	Ip^{(F)} = \sqrt{Ip^{(L)} \cdot Ip^{(P)}},
+	\qquad
+	Iq^{(F)} = \sqrt{Iq^{(L)} \cdot Iq^{(P)}}
+\end{equation*}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Fisherův index} &
+	\begin{lstlisting}
+IpF <- sqrt(IpL * IpP)
+IqF <- sqrt(IqL * IqP)
+	\end{lstlisting}
+	& Geometrický průměr Laspeyresova a Paascheho indexu. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{Fisherův index} &
+	\begin{lstlisting}
+IpF = np.sqrt(IpL * IpP)
+IqF = np.sqrt(IqL * IqP)
+	\end{lstlisting}
+	& Geometrický průměr Laspeyresova a Paascheho indexu. \\
+\end{funkcedict}
 
 \noindent\hrule\medskip
 
@@ -4162,7 +4625,7 @@ np.std(data, ddof=1)
 				& Výběrová směrodatná odchylka $S$. \\
 				\texttt{v\_x = std / mean} &
 				\begin{lstlisting}
-np.std(x) / np.mean(x)
+np.std(x, ddof=1) / np.mean(x)
 				\end{lstlisting}
 				& \textbf{Variační koeficient} $v_x$ (relativní variabilita). \\
 				\texttt{np.where(cond, x, y)} &
@@ -4550,4 +5013,331 @@ mtcars |>
 				& Extrahuje sloupec jako prostý vektor. \\
 			\end{funkcedict}
 
+<<<<<<< HEAD
+\section{$L_p$ normy}
+
+\subsection{Definice $L_p$ normy}
+
+$L_p$ norma vektoru reálných čísel poskytuje jednotící rámec pro míry polohy
+a variability. Pro různé hodnoty $p$ odpovídá různým statistickým mírám.
+
+\begin{equation*}
+	L_p(\mathbf{x}) = \|\mathbf{x}\|_p = \left(\sum_{i=1}^{n} |x_i|^p\right)^{1/p}
+\end{equation*}
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\mathbf{x} = (x_1, x_2, \ldots, x_n)^T$ je vektor reálných čísel,
+	\item $p > 0$ je reálné číslo (řád normy),
+	\item $|x_i|$ je absolutní hodnota $i$-té složky vektoru,
+	\item $n$ je délka vektoru.
+\end{itemize}
+
+Speciálně pro $p = 0$ uvažujeme $0^0 = 0$, takže $\|\mathbf{x}\|_0$ počítá počet nenulových složek vektoru.
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{norm(x, type)} &
+	\begin{lstlisting}
+x <- c(3, -4, 0, 2)
+norm(as.matrix(x), type="1")   # L1
+norm(as.matrix(x), type="2")   # L2
+	\end{lstlisting}
+	&
+	Vrací $L_1$ nebo $L_2$ normu vektoru (jako jednosloupcové matice). \\
+	\texttt{sum(abs(x)\^{}p)\^{}(1/p)} &
+	\begin{lstlisting}
+p <- 3
+x <- c(3, -4, 0, 2)
+sum(abs(x)^p)^(1/p)
+	\end{lstlisting}
+	&
+	Vrací $L_p$ normu vektoru pro libovolné $p > 0$. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{np.linalg.norm} &
+	\begin{lstlisting}
+import numpy as np
+x = np.array([3, -4, 0, 2])
+np.linalg.norm(x, ord=1)  # L1
+np.linalg.norm(x, ord=2)  # L2
+np.linalg.norm(x, ord=p)  # Lp
+	\end{lstlisting}
+	&
+	Vrací $L_p$ normu vektoru. Parametr \texttt{ord} odpovídá hodnotě $p$. \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
+\subsection{$L_\infty$ norma}
+
+$L_\infty$ norma je limitním případem $L_p$ normy pro $p \to \infty$.
+Výsledkem je největší absolutní hodnota ze složek vektoru.
+
+\begin{equation*}
+	L_\infty(\mathbf{x}) = \|\mathbf{x}\|_\infty = \lim_{p \to \infty} \left(\sum_{i=1}^{n} |x_i|^p\right)^{1/p} = \max_{i \in \{1,\ldots,n\}} |x_i|
+\end{equation*}
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\mathbf{x} = (x_1, x_2, \ldots, x_n)^T$ je vektor reálných čísel,
+	\item $\max$ označuje maximum přes všechny složky vektoru.
+\end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{max(abs(x))} &
+	\begin{lstlisting}
+x <- c(3, -4, 0, 2)
+max(abs(x))
+	\end{lstlisting}
+	&
+	Vrací $L_\infty$ normu vektoru: $\max_i |x_i|$. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{np.linalg.norm} &
+	\begin{lstlisting}
+import numpy as np
+x = np.array([3, -4, 0, 2])
+np.linalg.norm(x, ord=np.inf)
+	\end{lstlisting}
+	&
+	Vrací $L_\infty$ normu vektoru: $\max_i |x_i|$. \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
+\subsection{$L_p$ norma distancí}
+
+$L_p$ norma distancí měří vzdálenost vektoru $\mathbf{x}$ od libovolné
+reálné hodnoty $x^*$. Volbou $p$ dostaneme různé míry polohy jako minimalizátory.
+
+\begin{equation*}
+	L_p(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_p = \left(\sum_{i=1}^{n} |x_i - x^*|^p\right)^{1/p}
+\end{equation*}
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\mathbf{x} = (x_1, x_2, \ldots, x_n)^T$ je vektor reálných čísel,
+	\item $x^*$ je libovolná reálná hodnota (kandidát na míru polohy),
+	\item $p \geq 0$ je řád normy.
+\end{itemize}
+
+Přehled minimalizátorů $L_p$ normy distancí:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{cl}
+	\toprule
+	$p$ & minimalizátor $L_p$ normy distancí \\
+	\midrule
+	$0$ & modus \\
+	$1$ & medián \\
+	$2$ & aritmetický průměr \\
+	$\infty$ & mid-range $= \frac{\max \mathbf{x} + \min \mathbf{x}}{2}$ \\
+	\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\hrule\medskip
+
+\subsubsection{$L_0$ norma distancí --- modus}
+
+$L_0$ norma distancí je minimalizována modem (modusem) --- nejčastěji se
+vyskytující hodnotou v datech. Využívá se v klasifikačních úlohách strojového
+učení, kde minimalizuje mismatch rate.
+
+\begin{equation*}
+	L_0(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_0 = \lim_{p \to 0^+} \sum_{i=1}^{n} |x_i - x^*|^p
+\end{equation*}
+
+Norma je minimalizována pro $x^* = \hat{x}$, kde $\hat{x}$ je modus souboru.
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\hat{x}$ je modus (nejčastěji se vyskytující hodnota) souboru $\mathbf{x}$.
+\end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{which.max(table(x))} &
+	\begin{lstlisting}
+x <- c(1, 2, 2, 3, 2, 4)
+modus <- as.numeric(
+  names(which.max(table(x)))
+)
+	\end{lstlisting}
+	&
+	Vrací modus vektoru \texttt{x} (hodnotu s nejvyšší četností). \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{scipy.stats.mode} &
+	\begin{lstlisting}
+from scipy import stats
+x = [1, 2, 2, 3, 2, 4]
+modus = stats.mode(x).mode
+	\end{lstlisting}
+	&
+	Vrací modus pole \texttt{x}. \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
+\subsubsection{$L_1$ norma distancí --- medián}
+
+$L_1$ norma distancí je minimalizována mediánem. Využívá se při hledání
+optimálního umístění bodu v prostoru (např.\ studna mezi záhony, poštovní
+centrála v bloku zástavby).
+
+\begin{equation*}
+	L_1(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_1 = \sum_{i=1}^{n} |x_i - x^*|
+\end{equation*}
+
+Norma je minimalizována pro $x^* = \tilde{x}$, kde $\tilde{x}$ je medián souboru.
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\tilde{x}$ je medián souboru $\mathbf{x}$.
+\end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{median(x)} &
+	\begin{lstlisting}
+x <- c(3, 1, 4, 1, 5, 9, 2, 6)
+median(x)
+	\end{lstlisting}
+	&
+	Vrací medián vektoru \texttt{x}. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{np.median} &
+	\begin{lstlisting}
+import numpy as np
+x = np.array([3, 1, 4, 1, 5, 9, 2, 6])
+np.median(x)
+	\end{lstlisting}
+	&
+	Vrací medián pole \texttt{x}. \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
+\subsubsection{$L_2$ norma distancí --- aritmetický průměr}
+
+$L_2$ norma distancí je minimalizována aritmetickým průměrem. Tvoří základ
+metody nejmenších čtverců (MNČ) v lineární regresi.
+
+\begin{equation*}
+	L_2(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_2 = \sqrt{\sum_{i=1}^{n} (x_i - x^*)^2}
+\end{equation*}
+
+Norma je minimalizována pro $x^* = \bar{x}$, kde $\bar{x}$ je aritmetický průměr souboru.
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\bar{x}$ je aritmetický průměr souboru $\mathbf{x}$.
+\end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{mean(x)} &
+	\begin{lstlisting}
+x <- c(3, 1, 4, 1, 5, 9, 2, 6)
+mean(x)
+	\end{lstlisting}
+	&
+	Vrací aritmetický průměr vektoru \texttt{x}. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{np.mean} &
+	\begin{lstlisting}
+import numpy as np
+x = np.array([3, 1, 4, 1, 5, 9, 2, 6])
+np.mean(x)
+	\end{lstlisting}
+	&
+	Vrací aritmetický průměr pole \texttt{x}. \\
+\end{funkcedict}
+
+\noindent\hrule\medskip
+
+\subsubsection{$L_\infty$ norma distancí --- mid-range}
+
+$L_\infty$ norma distancí je minimalizována mid-range --- průměrem minima
+a maxima souboru. Využívá se při umístění prvku v nepředvídatelném
+(stochastickém) systému, kde chceme minimalizovat největší možnou vzdálenost
+(např.\ umístění hasicího přístroje na chodbě, volba univerzální velikosti
+pracovního oděvu).
+
+\begin{equation*}
+	L_\infty(\mathbf{x}, x^*) = \|\mathbf{x}, x^*\|_\infty = \max_{i \in \{1,\ldots,n\}} |x_i - x^*|
+\end{equation*}
+
+Norma je minimalizována pro
+
+\begin{equation*}
+	x^* = \frac{\max \mathbf{x} + \min \mathbf{x}}{2}
+\end{equation*}
+
+kde
+
+\begin{itemize}[noitemsep]
+	\item $\max \mathbf{x}$ je největší hodnota souboru,
+	\item $\min \mathbf{x}$ je nejmenší hodnota souboru.
+\end{itemize}
+
+\paragraph{Implementace v R}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{(max(x)+min(x))/2} &
+	\begin{lstlisting}
+x <- c(3, 1, 4, 1, 5, 9, 2, 6)
+mid_range <- (max(x) + min(x)) / 2
+	\end{lstlisting}
+	&
+	Vrací mid-range vektoru \texttt{x}. \\
+\end{funkcedict}
+
+\paragraph{Implementace v Python}\mbox{}\par
+
+\begin{funkcedict}
+	\texttt{(np.max(x)+np.min(x))/2} &
+	\begin{lstlisting}
+import numpy as np
+x = np.array([3, 1, 4, 1, 5, 9, 2, 6])
+mid_range = (np.max(x) + np.min(x)) / 2
+	\end{lstlisting}
+	&
+	Vrací mid-range pole \texttt{x}. \\
+\end{funkcedict}
+
+=======
+>>>>>>> e275957 (refactor: move Lp normy into existing 3.2 subsection, remove separate section, drop R/Python impls)
 \end{document}
