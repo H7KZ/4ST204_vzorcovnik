@@ -3381,10 +3381,13 @@ Model: $\hat{y} = b_0 + b_1 x$. Koeficienty minimalizují součet čtverců rezi
 	b_1 = \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2}, \qquad b_0 = \bar{y} - b_1 \bar{x}
 \end{equation*}
 
+\textbf{Interpretace:} $b_1$ udává, o kolik jednotek se průměrně změní $Y$, vzroste-li $X$ o 1 jednotku.
+$b_0$ je odhadovaná hodnota $Y$ při $X = 0$ (nemusí mít věcný smysl, pokud $X = 0$ leží mimo rozsah dat).
+
 \paragraph{Implementace v R}\mbox{}\par
 
 \begin{funkcedict}
-		
+
 	\texttt{lm(y \textasciitilde\ x)} &
 	\begin{lstlisting}
 m <- lm(cena ~ naklady)
@@ -3988,6 +3991,14 @@ nebo v běžném období (\textbf{Paascheho}, superindex $P$).
 
 kde $p_0, p_1$ jsou ceny v základním a běžném období, $q_0, q_1$ jsou množství,
 $Q_0 = p_0 q_0$, $Q_1 = p_1 q_1$ jsou výdaje.
+
+\medskip
+\noindent\textbf{Interpretace:}
+\begin{itemize}[noitemsep]
+	\item \textbf{Laspeyresův index} (${}^L$): fixuje váhy ze \textbf{základního} období ($q_0$ nebo $p_0$). Odpovídá otázce: \emph{o kolik by se změnily náklady na základní spotřební koš?}
+	\item \textbf{Paascheho index} (${}^P$): fixuje váhy z \textbf{běžného} období ($q_1$ nebo $p_1$). Odpovídá otázce: \emph{o kolik je dražší nakoupit dnešní spotřební koš oproti základnímu období?}
+	\item Výsledek $> 1$ znamená nárůst (ceny/množství vzrostly), $< 1$ pokles.
+\end{itemize}
 
 \noindent\hrule\medskip
 
